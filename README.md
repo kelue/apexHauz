@@ -32,3 +32,11 @@ Check Issues section to see todos and features to work on and indicate that you 
     User can reset password
     User can report a posted advert as fraudulent
     User can add multiple pictures to a posted advert
+
+### Tools
+
+    NodeJS
+    ExpressJS
+    MySQL
+    JWT => Token management
+    bcryptjs => Password hash
