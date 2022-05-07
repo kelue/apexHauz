@@ -1,4 +1,4 @@
-#SHCapstonetwo
+# SHCapstonetwo
 
 ## Side Hustle Second Capstone Project Nodejs Track Group 24
 
@@ -11,11 +11,11 @@ Check Issues section to see todos and features to work on and indicate that you 
 
 ### You can work on as many issues/features as you want, Pull requests will be merged on a rolling basis of first commit, first review. Thank you!!
 
-##CapStone Project Overview
+## CapStone Project Overview
 
-###ApexHauz is a platform where people can create and/or search properties for sale or rent
+### ApexHauz is a platform where people can create and/or search properties for sale or rent
 
-###Required features
+### Required features
 
     User can sign up
     User can sign in
@@ -27,7 +27,7 @@ Check Issues section to see todos and features to work on and indicate that you 
     User can view all properties of a specific type - 2 bedrooms, 3 bedrooms, mini flat etc
     User can view a specific property advert
 
-###Optional features
+### Optional features
 
     User can reset password
     User can report a posted advert as fraudulent
