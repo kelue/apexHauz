@@ -49,6 +49,17 @@ class User {
             }
         })
     }
+    static loginUser(user, result) {
+        db.query(`SELECT * FROM users WHERE email = ? AND password`, [user.email], (err, result) => {
+            if (result.length == 0) {
+                console.log("Success: User Does not Exist");
+                return true;
+            } else {
+                console.log("error: user exist");
+                return false;
+            }
+        })
+    }
 }
 
 module.exports = User;

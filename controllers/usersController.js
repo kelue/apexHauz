@@ -58,3 +58,13 @@ function checkUser(user) {
         }
     })
 }
+
+exports.loginUser = (req, res) => {
+    User.loginUser((err, data) => {
+        if (err)
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving users."
+            });
+        else res.send(data);
+    });
+};
