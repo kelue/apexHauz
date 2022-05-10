@@ -1,9 +1,15 @@
 const db = require("../config/db.config");
 
+
 class User {
-    constructor(email, phone) {
+    constructor(email, first_name, last_name, hashPassword, phone, address, is_admin) {
         this.email = email;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.hashPassword = hashPassword;
         this.phone = phone;
+        this.address = address;
+        this.is_admin = is_admin;
     }
 
     static getAll(result) {
@@ -20,7 +26,7 @@ class User {
     }
 
     static createUser(newUser, result) {
-        db.query(`INSERT INTO users VALUES(?, ?, ?)`, ['', newUser.email, newUser.phone], (err, res) => {
+        db.query(`INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`, ['', newUser.email, newUser.first_name, newUser.last_name, newUser.hashPassword, newUser.phone, newUser.address, newUser.is_admin, ''], (err, res) => {
             if (err) {
                 console.log("error: ", err);
                 result(err, null);
@@ -32,12 +38,14 @@ class User {
         });
     }
 
-    static checkUser(newUser, result) {
-        db.query(`INSERT INTO users VALUES(?, ?, ?)`, ['', newUser.email, newUser.phone], (err, res) => {
-            if (err) {
-                return false;
-            } else {
+    static checkUser(user) {
+        db.query(`SELECT * FROM users WHERE email = ?`, [user.email], (err, result) => {
+            if (result.length == 0) {
+                console.log("Success: User Does not Exist");
                 return true;
+            } else {
+                console.log("error: user exist");
+                return false;
             }
         })
     }
