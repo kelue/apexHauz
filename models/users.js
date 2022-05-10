@@ -39,15 +39,16 @@ class User {
         });
     }
 
-    static checkUser(user) {
-        db.query(`SELECT * FROM users WHERE email = ?`, [user.email], (err, result) => {
-            if (result.length == 0) {
-                console.log("Success: User Does not Exist");
-                return true;
-            } else {
-                console.log("error: user exist");
-                return false;
+    static checkUser(newUser, callback) {
+        db.query(`SELECT * FROM users WHERE email = ?`, [newUser.email], (err, result) => {
+            if (!result.length) {
+                console.log("found user");
+                callback(null, result[0]);
+                return;
             }
+            //callback({ kind: "not_found" }, null);
+            callback(null, result[0]);
+            return;
         })
     }
     static loginUser(newUser, callback) {
