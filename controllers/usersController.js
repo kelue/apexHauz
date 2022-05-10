@@ -1,4 +1,5 @@
 const User = require("../models/users.js");
+const bcrypt = require('bcryptjs');
 
 
 exports.findAll = (req, res) => {
@@ -20,36 +21,40 @@ exports.createUser = (req, res) => {
     }
 
     // Create a User
-    const { email, phone } = req.body;
-    const user = new User(email, phone);
+    const { email, first_name, last_name, password, phone, address, is_admin } = req.body;
+    const salt = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(password, salt);
+    const user = new User(email, first_name, last_name, hashPassword, phone, address, is_admin);
 
-    if (checkUser(user) === false) {
-        console.log("Email Exist");
-        res.status(400).json({
-            status: false,
-            message: "Email or Phone Already Exist"
-        });
-    } else {
-        // Save User in the database
-        User.createUser(user, (err, data) => {
-            if (err)
-                res.status(500).send({
-                    message: err.message || "Some error occurred while creating the User."
-                });
-            else
-                res.status(200).json({
-                    status: true,
-                    message: "User created successfully",
-                    data: data
-                });
-        });
-    }
+    // if (checkUser(user) == false) {
+    //     console.log("Email Exist");
+    //     res.status(400).json({
+    //         status: false,
+    //         message: "Email or Phone Already Exist"
+    //     });
+    // } else {
+    // Save User in the database
+    User.createUser(user, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message: err.message || "Some error occurred while creating the User."
+            });
+        else
+            res.status(200).json({
+                status: true,
+                message: "User created successfully",
+                data: data
+            });
+    });
+    //}
 };
 
-function checkUser(newUser) {
-    if (User.checkUser(newUser) === false) {
-        return false;
-    } else {
-        return false;
-    }
+function checkUser(user) {
+    db.query(`SELECT * FROM users WHERE email = ?`, [user.email], (err, result) => {
+        if (result.length == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    })
 }
