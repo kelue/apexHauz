@@ -50,17 +50,15 @@ class User {
             }
         })
     }
-    static loginUser(newUser, result) {
-        db.query(`SELECT * FROM users WHERE email = ?`, [newUser.email], (err, res) => {
+    static loginUser(newUser, callback) {
+        db.query(`SELECT * FROM users WHERE email = ?`, [newUser.email], (err, result) => {
             if (err) {
                 console.log("error: ", err);
-                result(null, err);
                 return;
             }
-
-            console.log(res);
-            return res;
-            //result(null, res);
+            callback(null, result[0]);
+            return;
+            // result(null, { id: res.insertId, ...newUser });
         })
     }
 }
