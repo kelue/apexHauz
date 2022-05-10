@@ -33,16 +33,12 @@ class User {
     }
 
     static checkUser(newUser, result) {
-        db.query(`SELECT * FROM users WHERE email = ? AND phone = ?`, [newUser.email, newUser.phone], (err, res) => {
+        db.query(`INSERT INTO users VALUES(?, ?, ?)`, ['', newUser.email, newUser.phone], (err, res) => {
             if (err) {
-                console.log("error: ", err);
-                result(err, null);
-                return;
+                return false;
             } else {
                 return true;
             }
-
-            //result(null, { id: res.insertId, ...newUser });
         })
     }
 }
