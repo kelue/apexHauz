@@ -26,37 +26,41 @@ exports.createUser = (req, res) => {
     const hashPassword = bcrypt.hashSync(password, salt);
     const user = new User(email, first_name, last_name, hashPassword, phone, address, is_admin);
 
-    // if (checkUser(user) == false) {
-    //     console.log("Email Exist");
-    //     res.status(400).json({
-    //         status: false,
-    //         message: "Email or Phone Already Exist"
-    //     });
-    // } else {
-    // Save User in the database
-    User.createUser(user, (err, data) => {
-        if (err)
-            res.status(500).send({
-                message: err.message || "Some error occurred while creating the User."
-            });
-        else
-            res.status(200).json({
-                status: true,
-                message: "User created successfully",
-                data: data
-            });
-    });
-    //}
+    if (checkUser(user) === false) {
+        console.log("Email Exist");
+        res.status(400).json({
+            status: false,
+            message: "Email or Phone Already Exist"
+        });
+    } else {
+        // Save User in the database
+        User.createUser(user, (err, data) => {
+            if (err)
+                res.status(500).send({
+                    message: err.message || "Some error occurred while creating the User."
+                });
+            else
+                res.status(200).json({
+                    status: true,
+                    message: "User created successfully",
+                    data: data
+                });
+        });
+    }
 };
 
 function checkUser(user) {
-    db.query(`SELECT * FROM users WHERE email = ?`, [user.email], (err, result) => {
-        if (result.length == 0) {
-            return true;
-        } else {
+    const checkUser = User.checkUser(user, (err, result) => {
+        if (err) {
             return false;
+        } else {
+            if (result.email == null) {
+                return true;
+            }
         }
-    })
+    });
+
+
 }
 
 exports.loginUser = async(req, res) => {
@@ -68,19 +72,24 @@ exports.loginUser = async(req, res) => {
 
         try {
             const foundUser = User.loginUser(newUser, (err, result) => {
-                if (err)
+                if (err) {
                     res.status(500).send({
                         message: err.message || "Some error occurred while validating the User."
                     });
-                else
-                if (bcrypt.compare(password, result.password)) {
-                    res.status(200).json({
-                        status: true,
-                        message: "User Loggedin successfully",
-                        password: result.password,
-                    });
                 } else {
-                    res.json("Invalid Email or Password");
+                    const passwordMatch = bcrypt.compare(password, result.password);
+                    if (passwordMatch) {
+                        res.status(200).json({
+                            status: true,
+                            message: "User Loggedin successfully",
+                            password: result.password,
+                        });
+                    } else {
+                        res.status(400).json({
+                            status: false,
+                            message: "Invalid Email and Password"
+                        });
+                    }
                 }
             });
             //const foundUser = true;
