@@ -60,25 +60,42 @@ function checkUser(user) {
 }
 
 exports.loginUser = async(req, res) => {
-    const { email } = req.body;
-    // const salt = bcrypt.genSaltSync(10);
-    // const hashPassword = bcrypt.hashSync(password, salt);
-    const user = new User(email);
+    const { email, password } = req.body;
+    if (!email || !password) {
+        res.json({ msg: "Please fill in all fields" })
+    } else {
+        const newUser = new User(email, password);
 
-    try {
-        const foundUser = User.loginUser(user);
-        //const foundUser = true;
-        if (foundUser) {
-            let submittedPass = req.body.password;
-            let storedPass = '$2a$10$Le98/.Djlv79HZuJxDLAZOkkNNgZ5FXptNWJjjIesTgEiwT5yNEWW';
-            const passwordMatch = await bcrypt.compare(submittedPass, storedPass);
-            if (passwordMatch) {
-                res.json("Login Successful");
-            } else {
-                res.json("Invalid Email or Password");
-            }
+        try {
+            const foundUser = User.loginUser(newUser, (err, result) => {
+                if (err)
+                    res.status(500).send({
+                        message: err.message || "Some error occurred while validating the User."
+                    });
+                else
+                if (bcrypt.compare(password, result.password)) {
+                    res.status(200).json({
+                        status: true,
+                        message: "User Loggedin successfully",
+                        password: result.password,
+                    });
+                } else {
+                    res.json("Invalid Email or Password");
+                }
+            });
+            //const foundUser = true;
+            // if (foundUser) {
+            //     let submittedPass = req.body.password;
+            //     let storedPass = '$2a$10$Le98/.Djlv79HZuJxDLAZOkkNNgZ5FXptNWJjjIesTgEiwT5yNEWW';
+            //     const passwordMatch = await bcrypt.compare(submittedPass, storedPass);
+            //     if (passwordMatch) {
+            //         res.json("Login Successful");
+            //     } else {
+            //         res.json("Invalid Email or Password");
+            //     }
+            // }
+        } catch (err) {
+            res.send("Error: " + err);
         }
-    } catch (err) {
-        res.send("Error: " + err);
     }
 };
