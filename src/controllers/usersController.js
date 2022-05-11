@@ -37,12 +37,10 @@ exports.createUser = async(req, res) => {
     } else {
         db.query(`SELECT * FROM users WHERE email = ?`, [email], function(err, result) {
             if (result.length > 0) {
-                return Response.send(
-                    res.status(401),
-                    false, {
-                        msg: "This Email Address Already Exists"
-                    }
-                );
+                res.status(401).json({
+                    status: 'error',
+                    error: "Email already exists",
+                });
             } else {
                 const password = hashPassword;
                 const user = new User(email, first_name, last_name, password, phone, address, is_admin);
@@ -53,8 +51,7 @@ exports.createUser = async(req, res) => {
                         });
                     else
                         res.status(200).json({
-                            status: true,
-                            message: "User created successfully",
+                            status: 'success',
                             data: data
                         });
                 });
@@ -81,14 +78,14 @@ exports.loginUser = async(req, res) => {
                     const passwordMatch = bcrypt.compare(password, result.password);
                     if (passwordMatch) {
                         res.status(200).json({
-                            status: true,
+                            status: 'success',
                             message: "User Loggedin successfully",
                             password: result.password,
                         });
                     } else {
                         res.status(400).json({
-                            status: false,
-                            message: "Invalid Email and Password"
+                            status: 'error',
+                            error: "Invalid Email and Password"
                         });
                     }
                 }
