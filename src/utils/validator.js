@@ -1,9 +1,18 @@
 const validator = require('validator')
 
-module.exports.signup = (email, password, phone) => {
+module.exports.signup = (email, password, phone, first_name, last_name, address) => {
     const errors = {};
     if (phone === '') {
-        errors["phone"] = "Phone cannot be blank"
+        errors["phone"] = "Phone is Required"
+    }
+    if (first_name === '') {
+        errors["first_name"] = "First Name is required"
+    }
+    if (last_name === '') {
+        errors["last_name"] = "Last Name is Required"
+    }
+    if (address === '') {
+        errors["address"] = "Address is Required"
     }
     if (email === '') {
         errors["email"] = "Email cannot be blank"

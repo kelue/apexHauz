@@ -1,6 +1,8 @@
 const User = require("../models/users.js")
 const bcrypt = require('bcryptjs')
 const { signup } = require('../utils/validator');
+const Response = require("../utils/responseHandler.js");
+const db = require("../config/db.config");
 
 
 exports.findAll = (req, res) => {
@@ -18,32 +20,61 @@ exports.createUser = async(req, res) => {
     const { email, first_name, last_name, password, phone, address, is_admin } = req.body;
     const salt = bcrypt.genSaltSync(10);
     const hashPassword = await bcrypt.hashSync(password, salt);
-    const { errors, valid } = signup(email, password, phone);
-
-    const user = new User(email, first_name, last_name, hashPassword, phone, address, is_admin);
-
-    /* Checking if the user exist in the database. */
-    if (checkUser(user) === false) {
-        console.log("Email Exist");
-        res.status(400).json({
-            status: false,
-            message: "Email or Phone Already Exist"
-        });
+    const { errors, valid } = signup(email, password, phone, first_name, last_name, address);
+    const eSpace = email.indexOf(' ') >= 0;
+    if (!valid) {
+        return Response.send(
+            res.status(401),
+            false,
+            errors
+        );
+    } else
+    if (eSpace == true) {
+        return Response.send(
+            res.status(401),
+            false, [{ msg: "Email cannot contain spaces" }]
+        );
     } else {
-        // Save User in the database
-        User.createUser(user, (err, data) => {
-            if (err)
-                res.status(500).send({
-                    message: err.message || "Some error occurred while creating the User."
-                });
-            else
-                res.status(200).json({
-                    status: true,
-                    message: "User created successfully",
-                    data: data
-                });
+        db.query(`SELECT * FROM users WHERE email = ?`, [email], function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            //You will get an array. if no users found it will return.
+
+            if (result.length > 0) {
+                // //Then do your task (run insert query)
+                // connection.query('INSERT INTO users(name, email, phone, password) VALUES("' + name + '", "' + email + '", "' + phone + '", "' + password + '")', [name, email, phone, password]);
+
+                res.send('Welcome');
+            }
         });
     }
+
+
+
+    //const user = new User(email, first_name, last_name, hashPassword, phone, address, is_admin);
+
+    // /* Checking if the user exist in the database. */
+    // if (checkUser(user) === false) {
+    //     console.log("Email Exist");
+    //     res.status(400).json({
+    //         status: false,
+    //         message: "Email or Phone Already Exist"
+    //     });
+    // } else {
+    //     // Save User in the database
+    //     User.createUser(user, (err, data) => {
+    //         if (err)
+    //             res.status(500).send({
+    //                 message: err.message || "Some error occurred while creating the User."
+    //             });
+    //         else
+    //             res.status(200).json({
+    //                 status: true,
+    //                 message: "User created successfully",
+    //                 data: data
+    //             });
+    //     });
+    // }
 };
 
 function checkUser(user) {
