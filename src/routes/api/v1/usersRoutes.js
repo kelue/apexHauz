@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const userController = require('../../../controllers/usersController');
+const { hasAuth } = require('../../../middleware/hasAuth')
 
 module.exports = app => {
     // Create a new User

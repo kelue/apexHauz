@@ -1,5 +1,6 @@
-const User = require("../models/users.js");
-const bcrypt = require('bcryptjs');
+const User = require("../models/users.js")
+const bcrypt = require('bcryptjs')
+const { signup } = require('../utils/validator');
 
 
 exports.findAll = (req, res) => {
@@ -12,20 +13,16 @@ exports.findAll = (req, res) => {
     });
 };
 
-exports.createUser = (req, res) => {
-    // Validate request
-    if (!req.body) {
-        res.status(400).send({
-            message: "Content can not be empty!"
-        });
-    }
-
-    // Create a User
+exports.createUser = async(req, res) => {
+    // Create user
     const { email, first_name, last_name, password, phone, address, is_admin } = req.body;
     const salt = bcrypt.genSaltSync(10);
-    const hashPassword = bcrypt.hashSync(password, salt);
+    const hashPassword = await bcrypt.hashSync(password, salt);
+    const { errors, valid } = signup(email, password, phone);
+
     const user = new User(email, first_name, last_name, hashPassword, phone, address, is_admin);
 
+    /* Checking if the user exist in the database. */
     if (checkUser(user) === false) {
         console.log("Email Exist");
         res.status(400).json({
