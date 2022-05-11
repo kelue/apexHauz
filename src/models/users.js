@@ -2,11 +2,10 @@ const db = require("../config/db.config");
 
 
 class User {
-    constructor(email, first_name, last_name, hashPassword, password, phone, address, is_admin) {
+    constructor(email, first_name, last_name, password, phone, address, is_admin) {
         this.email = email;
         this.first_name = first_name;
         this.last_name = last_name;
-        this.hashPassword = hashPassword;
         this.password = password;
         this.phone = phone;
         this.address = address;
@@ -27,7 +26,15 @@ class User {
     }
 
     static createUser(newUser, result) {
-        db.query(`INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`, ['', newUser.email, newUser.first_name, newUser.last_name, newUser.hashPassword, newUser.phone, newUser.address, newUser.is_admin, ''], (err, res) => {
+        var date_ob = new Date();
+        var day = ("0" + date_ob.getDate()).slice(-2);
+        var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+        var year = date_ob.getFullYear();
+        var hours = date_ob.getHours();
+        var minutes = date_ob.getMinutes();
+        var seconds = date_ob.getSeconds();
+        var dateTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+        db.query(`INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, ['', newUser.email, newUser.first_name, newUser.last_name, newUser.password, newUser.phone, newUser.address, newUser.is_admin, dateTime, dateTime], (err, res) => {
             if (err) {
                 console.log("error: ", err);
                 result(err, null);
