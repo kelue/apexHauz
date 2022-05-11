@@ -10,6 +10,6 @@ const connection = mysql.createPool({
     database: process.env['DB_DATABASE']
 });
 
-migration.init(connection, __dirname + '/migrations', function() {
+migration.init(connection, __dirname + '/src/migrations', function() {
     console.log("finished running migrations");
 });

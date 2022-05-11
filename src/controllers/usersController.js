@@ -36,16 +36,30 @@ exports.createUser = async(req, res) => {
         );
     } else {
         db.query(`SELECT * FROM users WHERE email = ?`, [email], function(err, result) {
-            if (err) throw err;
-            console.log(result);
-            //You will get an array. if no users found it will return.
-
             if (result.length > 0) {
-                // //Then do your task (run insert query)
-                // connection.query('INSERT INTO users(name, email, phone, password) VALUES("' + name + '", "' + email + '", "' + phone + '", "' + password + '")', [name, email, phone, password]);
-
-                res.send('Welcome');
+                return Response.send(
+                    res.status(401),
+                    false, {
+                        msg: "This Email Address Already Exists"
+                    }
+                );
+            } else {
+                const password = hashPassword;
+                const user = new User(email, first_name, last_name, password, phone, address, is_admin);
+                User.createUser(user, (err, data) => {
+                    if (err)
+                        res.status(500).send({
+                            message: err.message || "Some error occurred while creating the User."
+                        });
+                    else
+                        res.status(200).json({
+                            status: true,
+                            message: "User created successfully",
+                            data: data
+                        });
+                });
             }
+
         });
     }
 
