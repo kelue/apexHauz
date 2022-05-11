@@ -62,48 +62,7 @@ exports.createUser = async(req, res) => {
 
         });
     }
-
-
-
-    //const user = new User(email, first_name, last_name, hashPassword, phone, address, is_admin);
-
-    // /* Checking if the user exist in the database. */
-    // if (checkUser(user) === false) {
-    //     console.log("Email Exist");
-    //     res.status(400).json({
-    //         status: false,
-    //         message: "Email or Phone Already Exist"
-    //     });
-    // } else {
-    //     // Save User in the database
-    //     User.createUser(user, (err, data) => {
-    //         if (err)
-    //             res.status(500).send({
-    //                 message: err.message || "Some error occurred while creating the User."
-    //             });
-    //         else
-    //             res.status(200).json({
-    //                 status: true,
-    //                 message: "User created successfully",
-    //                 data: data
-    //             });
-    //     });
-    // }
 };
-
-function checkUser(user) {
-    const checkUser = User.checkUser(user, (err, result) => {
-        if (err) {
-            return false;
-        } else {
-            if (result.email == null) {
-                return true;
-            }
-        }
-    });
-
-
-}
 
 exports.loginUser = async(req, res) => {
     const { email, password } = req.body;
