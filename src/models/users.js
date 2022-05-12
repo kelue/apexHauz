@@ -50,15 +50,17 @@ class User {
      */
     static createUser(newUser, result) {
         /* It's getting the current date and time and formatting it to be inserted into the database. */
-        var date_ob = new Date();
-        var day = ("0" + date_ob.getDate()).slice(-2);
-        var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-        var year = date_ob.getFullYear();
-        var hours = date_ob.getHours();
-        var minutes = date_ob.getMinutes();
-        var seconds = date_ob.getSeconds();
-        var dateTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
-        db.query(`INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, ['', newUser.email, newUser.first_name, newUser.last_name, newUser.password, newUser.phone, newUser.address, newUser.is_admin, dateTime, dateTime], (err, res) => {
+
+        // I might need this in future //
+        // var date_ob = new Date();
+        // var day = ("0" + date_ob.getDate()).slice(-2);
+        // var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+        // var year = date_ob.getFullYear();
+        // var hours = date_ob.getHours();
+        // var minutes = date_ob.getMinutes();
+        // var seconds = date_ob.getSeconds();
+        // var dateTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+        db.query(`INSERT INTO users VALUES(null, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`, [newUser.email, newUser.first_name, newUser.last_name, newUser.password, newUser.phone, newUser.address, newUser.is_admin], (err, res) => {
             /* It's checking to see if there is an error. If there is an error, it will log the error to
             the console and return the error. */
             if (err) {
@@ -68,7 +70,14 @@ class User {
             }
 
             /* It's returning the id of the user that was just created and the newUser object. */
-            result(null, { id: res.insertId, ...newUser });
+            result(null, {
+                id: res.insertId,
+                first_name: newUser.first_name,
+                last_name: newUser.last_name,
+                email: newUser.email,
+                phone: newUser.phone,
+                address: newUser.address
+            });
         });
     }
 
@@ -80,7 +89,6 @@ class User {
             }
             callback(null, result[0]);
             return;
-            // result(null, { id: res.insertId, ...newUser });
         })
     }
 }
