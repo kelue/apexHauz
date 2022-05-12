@@ -16,6 +16,8 @@ const db = require("../config/db.config");
 /* Importing the generateToken function from the token.js file. */
 const { generate: generateToken } = require('../utils/token');
 
+const { findUserByEmail: findUserByEmailQuery } = require('../database/queries');
+
 
 /* A function that returns all users in the database. */
 exports.findAll = (req, res) => {
@@ -68,7 +70,9 @@ exports.createUser = async(req, res) => {
         );
     } else {
         /* Checking if the email already exists in the database. */
-        db.query(`SELECT * FROM users WHERE email = ?`, [email], function(err, result) {
+        db.query(findUserByEmailQuery, [
+            email
+        ], function(err, result) {
             /* Checking if the email already exists in the database. */
             if (result.length > 0) {
                 res.status(401).json({

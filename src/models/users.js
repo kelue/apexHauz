@@ -1,6 +1,9 @@
 /* Importing the database connection from the db.config.js file. */
 const db = require("../config/db.config");
 
+/* It's importing the createNewUser function from the queries.js file. */
+const { createNewUser: createNewUserQuery } = require('../database/queries');
+
 
 /* It's a class that handles all the database queries for the users table. */
 class User {
@@ -49,18 +52,15 @@ class User {
      * @param result - is a callback function that is passed to the createUser function.
      */
     static createUser(newUser, result) {
-        /* It's getting the current date and time and formatting it to be inserted into the database. */
-
-        // I might need this in future //
-        // var date_ob = new Date();
-        // var day = ("0" + date_ob.getDate()).slice(-2);
-        // var month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-        // var year = date_ob.getFullYear();
-        // var hours = date_ob.getHours();
-        // var minutes = date_ob.getMinutes();
-        // var seconds = date_ob.getSeconds();
-        // var dateTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
-        db.query(`INSERT INTO users VALUES(null, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`, [newUser.email, newUser.first_name, newUser.last_name, newUser.password, newUser.phone, newUser.address, newUser.is_admin], (err, res) => {
+        db.query(createNewUserQuery, [
+            newUser.email,
+            newUser.first_name,
+            newUser.last_name,
+            newUser.password,
+            newUser.phone,
+            newUser.address,
+            newUser.is_admin
+        ], (err, res) => {
             /* It's checking to see if there is an error. If there is an error, it will log the error to
             the console and return the error. */
             if (err) {
