@@ -53,3 +53,31 @@ module.exports.signup = (email, password, phone, first_name, last_name, address)
         valid: Object.keys(errors).length < 1
     }
 }
+
+module.exports.signin = (email, password) => {
+    const errors = {};
+
+    /* Checking if the email is empty and if it is, it will return an error message. */
+    if (validator.isEmpty(email)) {
+        errors["email"] = "Email cannot be blank"
+    }
+    /* Checking if the email is valid. */
+    if (!validator.isEmail(email)) {
+        errors["email"] = "Not a valid email address";
+    }
+    /* Checking if the password is valid. */
+    if (!validator.isAscii(password)) {
+        errors["password"] = "Not a valid password";
+    }
+    /* Checking if the password is valid. */
+    if (!validator.isLength(password, { min: 4, max: 12 })) {
+        errors["password"] = "Ensure that your password has a minimum of 4 characters and maximum of 12 characters";
+    }
+    /* Returning an object with two keys, errors and valid. The errors key is an object that contains
+    all the errors that were found in the validation process. The valid key is a boolean that is
+    true if there are no errors and false if there are errors. */
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    }
+}
