@@ -110,9 +110,15 @@ exports.createUser = async(req, res) => {
     }
 };
 
+/* A function that logs in a user. */
 exports.loginUser = async(req, res) => {
+    /* Destructuring the request body. */
     const { email, password } = req.body;
+
+    /* Destructuring the signin function. */
     const { errors, valid } = signin(email, password);
+
+    /* Checking if the email and password are valid. */
     if (!valid) {
         return Response.send(
             res.status(401),
@@ -121,14 +127,21 @@ exports.loginUser = async(req, res) => {
         );
 
     } else {
+        /* Checking if the email exists in the database. */
         db.query(findUserByEmailQuery, [
             email
         ], function(err, result) {
+            /* Checking if the email exists in the database. */
             if (result.length > 0) {
+                /* Assigning the first user in the database to the user variable. */
                 const user = result[0];
+                /* Comparing the password entered by the user with the password in the database. */
                 const passwordIsValid = bcrypt.compareSync(password, user.password);
+                /* Checking if the password entered by the user is valid. */
                 if (passwordIsValid) {
+                    /* Generating a token for the user. */
                     const token = generateToken(user.id);
+                    /* Returning a success message if the user is logged in. */
                     res.status(201).json({
                         status: 'success',
                         data: {
@@ -139,12 +152,14 @@ exports.loginUser = async(req, res) => {
                         }
                     });
                 } else {
+                    /* Returning an error message if the password entered by the user is incorrect. */
                     res.status(401).json({
                         status: 'error',
                         error: "Incorrect Password. Please Try Again",
                     });
                 }
             } else {
+                /* Returning an error message if the email does not exist in the database. */
                 res.status(401).json({
                     status: 'error',
                     error: "Email address Does Not Exist",
