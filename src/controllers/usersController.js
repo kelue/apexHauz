@@ -162,7 +162,7 @@ exports.loginUser = async(req, res) => {
                 /* Returning an error message if the email does not exist in the database. */
                 res.status(401).json({
                     status: 'error',
-                    error: "Email address Does Not Exist",
+                    error: "User Does Not Exist",
                 });
             }
         });
