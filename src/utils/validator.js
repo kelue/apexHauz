@@ -6,27 +6,27 @@ module.exports.signup = (email, password, phone, first_name, last_name, address)
     /* Creating an empty object. */
     const errors = {};
     /* Checking if the phone number is empty and if it is, it will return an error message. */
-    if (phone === '') {
+    if (validator.isEmpty(phone)) {
         errors["phone"] = "Phone is Required"
     } else
-    /* Checking if the phone number is valid. */
+    /* Checking iYf the phone number is valid. */
     if (!validator.isMobilePhone(phone, 'en-NG')) {
         errors["phone"] = "Phone must be in Nigerian Format"
     }
     /* Checking if the first name is empty and if it is, it will return an error message. */
-    if (first_name === '') {
+    if (validator.isEmpty(first_name)) {
         errors["first_name"] = "First Name is required"
     }
     /* Checking if the last name is empty and if it is, it will return an error message. */
-    if (last_name === '') {
+    if (validator.isEmpty(last_name)) {
         errors["last_name"] = "Last Name is Required"
     }
     /* Checking if the address is empty and if it is, it will return an error message. */
-    if (address === '') {
+    if (validator.isEmpty(address)) {
         errors["address"] = "Address is Required"
     }
     /* Checking if the email is empty and if it is, it will return an error message. */
-    if (email === '') {
+    if (validator.isEmpty(email)) {
         errors["email"] = "Email cannot be blank"
     }
     /* Checking if the email is valid. */
@@ -34,7 +34,7 @@ module.exports.signup = (email, password, phone, first_name, last_name, address)
         errors["email"] = "Not a valid email address";
     }
     /* Checking if the password is empty and if it is, it will return an error message. */
-    if (password === '') {
+    if (validator.isEmpty(password)) {
         errors["password"] = "Password cannot be blank";
     }
     /* Checking if the password is valid. */
