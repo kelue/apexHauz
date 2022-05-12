@@ -1,54 +1,91 @@
+/* Importing the user model. */
 const User = require("../models/users.js")
+
+/* A library that helps you hash passwords. */
 const bcrypt = require('bcryptjs')
+
+/* Importing the signup function from the validator file. */
 const { signup } = require('../utils/validator');
+
+/* A function that returns a response object. */
 const Response = require("../utils/responseHandler.js");
+
+/* Importing the database connection. */
 const db = require("../config/db.config");
 
 
+/* A function that returns all users in the database. */
 exports.findAll = (req, res) => {
+    /* A function that returns all users in the database. */
     User.getAll((err, data) => {
+        /* A callback function that returns an error message if there is an error and returns the data
+        if there is no error. */
         if (err)
+        /* Returning an error message if there is an error. */
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving users."
-            });
+            message: err.message || "Some error occurred while retrieving users."
+        });
         else res.send(data);
     });
 };
 
+/* A function that creates a user. */
 exports.createUser = async(req, res) => {
     // Create user
+    /* Destructuring the request body. */
     const { email, first_name, last_name, password, phone, address, is_admin } = req.body;
+
+    /* Generating a salt for the password. */
     const salt = bcrypt.genSaltSync(10);
+    /* Hashing the password. */
     const hashPassword = await bcrypt.hashSync(password, salt);
+
+    /* Destructuring the signup function. */
     const { errors, valid } = signup(email, password, phone, first_name, last_name, address);
+
+    /* Checking if the email contains a space. */
     const eSpace = email.indexOf(' ') >= 0;
+
+    /* Checking if the email, password, phone, first_name, last_name and address are valid. */
     if (!valid) {
         return Response.send(
+            /* Returning an error message if the email, password, phone, first_name, last_name and
+            address are not valid. */
             res.status(401),
             false,
             errors
         );
     } else
+    /* Checking if the email contains a space. */
     if (eSpace == true) {
+        /* Returning an error message if the email contains a space. */
         return Response.send(
             res.status(401),
             false, [{ msg: "Email cannot contain spaces" }]
         );
     } else {
+        /* Checking if the email already exists in the database. */
         db.query(`SELECT * FROM users WHERE email = ?`, [email], function(err, result) {
+            /* Checking if the email already exists in the database. */
             if (result.length > 0) {
                 res.status(401).json({
                     status: 'error',
                     error: "Email already exists",
                 });
             } else {
+                /* Assigning the hashed password to the password variable. */
                 const password = hashPassword;
+
+                /* Creating a new user. */
                 const user = new User(email, first_name, last_name, password, phone, address, is_admin);
+                /* Creating a user. */
                 User.createUser(user, (err, data) => {
+                    /* Returning an error message if there is an error. */
                     if (err)
                         res.status(500).send({
                             message: err.message || "Some error occurred while creating the User."
                         });
+                    /* Returning a success message if the user is created. */
                     else
                         res.status(200).json({
                             status: 'success',
