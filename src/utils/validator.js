@@ -7,11 +7,11 @@ module.exports.signup = (email, password, phone, first_name, last_name, address)
     const errors = {};
     /* Checking if the phone number is empty and if it is, it will return an error message. */
     if (phone === '') {
-        errors["first_name"] = "Phone is Required"
-    }
+        errors["phone"] = "Phone is Required"
+    } else
     /* Checking if the phone number is valid. */
     if (!validator.isMobilePhone(phone, 'en-NG')) {
-        errors["phone"] = "Phone is not valid"
+        errors["phone"] = "Phone must be in Nigerian Format"
     }
     /* Checking if the first name is empty and if it is, it will return an error message. */
     if (first_name === '') {
