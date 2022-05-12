@@ -1,7 +1,8 @@
 const { dropDB: dropDBQuery } = require('../database/queries');
+db = require('../config/db.config');
 
 (() => {
-    require('../config/db.config').query(dropDBQuery, (err, _) => {
+    db.query(dropDBQuery, (err, _) => {
         if (err) {
             console.log("error: ", err);
             return;

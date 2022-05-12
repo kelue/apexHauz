@@ -1,8 +1,9 @@
-const { DB_NAME } = require('../utils/secrets')
+const { DB_NAME } = require('../config/db.config');
 
 const createDB = `CREATE DATABASE IF NOT EXISTS ${DB_NAME}`;
 
 const dropDB = `DROP DATABASE IF EXISTS ${DB_NAME}`;
+
 const createTableUsers = `
 CREATE TABLE IF NOT EXISTS users (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 

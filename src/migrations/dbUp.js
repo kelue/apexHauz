@@ -1,7 +1,8 @@
 const { createDB: createDBQuery } = require('../database/queries');
+db = require('../config/db.config');
 
 (() => {
-    require('../config/db.config').query(createDBQuery, (err, _) => {
+    db.query(createDBQuery, (err, _) => {
         if (err) {
             console.log("error: ", err);
             return;

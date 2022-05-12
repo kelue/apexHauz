@@ -5,7 +5,7 @@ const User = require("../models/users.js")
 const bcrypt = require('bcryptjs')
 
 /* Importing the signup function from the validator file. */
-const { signup } = require('../utils/validator');
+const { signup, signin } = require('../utils/validator');
 
 /* A function that returns a response object. */
 const Response = require("../utils/responseHandler.js");
@@ -16,6 +16,7 @@ const db = require("../config/db.config");
 /* Importing the generateToken function from the token.js file. */
 const { generate: generateToken } = require('../utils/token');
 
+/* Importing the findUserByEmail function from the queries.js file. */
 const { findUserByEmail: findUserByEmailQuery } = require('../database/queries');
 
 
@@ -111,46 +112,44 @@ exports.createUser = async(req, res) => {
 
 exports.loginUser = async(req, res) => {
     const { email, password } = req.body;
-    if (!email || !password) {
-        res.json({ msg: "Please fill in all fields" })
-    } else {
-        const newUser = new User(email, password);
+    const { errors, valid } = signin(email, password);
+    if (!valid) {
+        return Response.send(
+            res.status(401),
+            false,
+            errors
+        );
 
-        try {
-            const foundUser = User.loginUser(newUser, (err, result) => {
-                if (err) {
-                    res.status(500).send({
-                        message: err.message || "Some error occurred while validating the User."
+    } else {
+        db.query(findUserByEmailQuery, [
+            email
+        ], function(err, result) {
+            if (result.length > 0) {
+                const user = result[0];
+                const passwordIsValid = bcrypt.compareSync(password, user.password);
+                if (passwordIsValid) {
+                    const token = generateToken(user.id);
+                    res.status(201).json({
+                        status: 'success',
+                        data: {
+                            token,
+                            first_name: user.first_name,
+                            last_name: user.last_name,
+                            email: user.email
+                        }
                     });
                 } else {
-                    const passwordMatch = bcrypt.compare(password, result.password);
-                    if (passwordMatch) {
-                        res.status(200).json({
-                            status: 'success',
-                            message: "User Loggedin successfully",
-                            password: result.password,
-                        });
-                    } else {
-                        res.status(400).json({
-                            status: 'error',
-                            error: "Invalid Email and Password"
-                        });
-                    }
+                    res.status(401).json({
+                        status: 'error',
+                        error: "Incorrect Password. Please Try Again",
+                    });
                 }
-            });
-            //const foundUser = true;
-            // if (foundUser) {
-            //     let submittedPass = req.body.password;
-            //     let storedPass = '$2a$10$Le98/.Djlv79HZuJxDLAZOkkNNgZ5FXptNWJjjIesTgEiwT5yNEWW';
-            //     const passwordMatch = await bcrypt.compare(submittedPass, storedPass);
-            //     if (passwordMatch) {
-            //         res.json("Login Successful");
-            //     } else {
-            //         res.json("Invalid Email or Password");
-            //     }
-            // }
-        } catch (err) {
-            res.send("Error: " + err);
-        }
+            } else {
+                res.status(401).json({
+                    status: 'error',
+                    error: "Email address Does Not Exist",
+                });
+            }
+        });
     }
 };
