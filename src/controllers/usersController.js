@@ -13,6 +13,9 @@ const Response = require("../utils/responseHandler.js");
 /* Importing the database connection. */
 const db = require("../config/db.config");
 
+/* Importing the generateToken function from the token.js file. */
+const { generate: generateToken } = require('../utils/token');
+
 
 /* A function that returns all users in the database. */
 exports.findAll = (req, res) => {
@@ -38,7 +41,7 @@ exports.createUser = async(req, res) => {
     /* Generating a salt for the password. */
     const salt = bcrypt.genSaltSync(10);
     /* Hashing the password. */
-    const hashPassword = await bcrypt.hashSync(password, salt);
+    const hashPassword = await bcrypt.hashSync(password.trim(), salt);
 
     /* Destructuring the signup function. */
     const { errors, valid } = signup(email, password, phone, first_name, last_name, address);
@@ -77,7 +80,7 @@ exports.createUser = async(req, res) => {
                 const password = hashPassword;
 
                 /* Creating a new user. */
-                const user = new User(email, first_name, last_name, password, phone, address, is_admin);
+                const user = new User(email.trim(), first_name.trim(), last_name.trim(), password, phone.trim(), address, is_admin);
                 /* Creating a user. */
                 User.createUser(user, (err, data) => {
                     /* Returning an error message if there is an error. */
@@ -87,10 +90,14 @@ exports.createUser = async(req, res) => {
                         });
                     /* Returning a success message if the user is created. */
                     else
-                        res.status(200).json({
-                            status: 'success',
-                            data: data
-                        });
+                        var token = generateToken(data.id);
+                    res.status(200).json({
+                        status: 'success',
+                        data: {
+                            token,
+                            data
+                        }
+                    });
                 });
             }
 
