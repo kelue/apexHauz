@@ -58,6 +58,10 @@ const getAllProperties = `
 SELECT * FROM properties
 `;
 
+const getPropertyById = `
+SELECT * FROM properties WHERE id = ?
+`;
+
 module.exports = {
     createDB,
     dropDB,
@@ -68,5 +72,6 @@ module.exports = {
     findUserByEmail,
     createPropertiesUserForeignKeys,
     createPropertiesCategoriesForeignKeys,
-    getAllProperties
+    getAllProperties,
+    getPropertyById
 };

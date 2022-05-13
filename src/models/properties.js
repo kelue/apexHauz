@@ -1,6 +1,6 @@
 /* Importing the database connection from the db.config.js file. */
 const db = require("../config/db.config");
-const { getAllProperties: getAllPropertiesQuery } = require("../database/queries");
+const { getAllProperties: getAllPropertiesQuery, getPropertyById: getPropertyByIdQuery } = require("../database/queries");
 
 
 
@@ -33,6 +33,24 @@ class Properties {
             }
 
             result(null, res);
+        });
+    }
+
+    static getById(id, result) {
+        db.query(getPropertyByIdQuery, [id], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+            }
+
+            if (res.length) {
+                result(null, res[0]);
+                return;
+            }
+
+            // not found
+            result({ kind: "not_found" }, null);
         });
     }
 }
