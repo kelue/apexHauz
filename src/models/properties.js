@@ -36,6 +36,12 @@ class Properties {
         });
     }
 
+    /**
+     * If the result is not an error, and the result is not empty, then return the result, otherwise
+     * return an error.
+     * @param id - the id of the property you want to get
+     * @param result - This is the callback function that will be called when the query is complete.
+     */
     static getById(id, result) {
         db.query(getPropertyByIdQuery, [id], (err, res) => {
             if (err) {
