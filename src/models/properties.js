@@ -24,6 +24,10 @@ class Properties {
         this.user_id = user_id;
     }
 
+    /**
+     * This function is called by the controller, and it calls the database to get all the properties.
+     * @param result - This is the callback function that will be called when the query is complete.
+     */
     static getAll(result) {
         db.query(getAllPropertiesQuery, (err, res) => {
             if (err) {
