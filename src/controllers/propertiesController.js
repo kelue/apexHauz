@@ -17,18 +17,9 @@ exports.getAllProperties = (req, res) => {
     });
 }
 
-// exports.getPropertiesById = (req, res) => {
-//     /* A function that returns a property by its id. */
-//     Properties.getById((err, data) => {
-//         if (err)
-//             res.status(500).send({
-//                 message: err.message || "Some error occurred while retrieving property."
-//             });
-//         else res.send(data);
-//     });
-// }
-
+/* A function that returns a property by its id. */
 exports.getPropertiesById = (req, res) => {
+    /* A function that returns a property by its id. */
     Properties.getById(Number(req.params.id), (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
