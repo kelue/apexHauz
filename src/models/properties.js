@@ -1,8 +1,10 @@
 /* Importing the database connection from the db.config.js file. */
 const db = require("../config/db.config");
-const { getAllProperties: getAllPropertiesQuery, getPropertyById: getPropertyByIdQuery } = require("../database/queries");
-
-
+const {
+    getAllProperties: getAllPropertiesQuery,
+    getPropertyById: getPropertyByIdQuery,
+    createNewProperty: createPropertyQuery,
+} = require("../database/queries/properties");
 
 class Properties {
     /**
@@ -62,6 +64,10 @@ class Properties {
             // not found
             result({ kind: "not_found" }, null);
         });
+    }
+
+    static createProperties(properties, result) {
+        db.query(createNewPropertiesQuery, []);
     }
 }
 

@@ -58,7 +58,7 @@ exports.createUser = async(req, res) => {
             /* Returning an error message if the email, password, phone, first_name, last_name and
             address are not valid. */
             res.status(401),
-            false,
+            'error',
             errors
         );
     } else

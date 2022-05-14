@@ -10,6 +10,8 @@ const { hasAuth } = require('../../../middleware/hasAuth')
 module.exports = app => {
     router.get("/properties", propertiesController.getAllProperties);
 
+    router.post("/properties", propertiesController.createProperties);
+
     router.get("/properties/:id", propertiesController.getPropertiesById);
 
     app.use('/api/v1', router);
