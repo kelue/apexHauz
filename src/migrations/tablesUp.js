@@ -4,7 +4,7 @@ const {
     createTableProperties: createTablePropertiesQuery,
     createPropertiesUserForeignKeys: createPropertiesUserForeignKeysQuery,
     createPropertiesCategoriesForeignKeys: createPropertiesCategoriesForeignKeysQuery,
-} = require('../database/queries');
+} = require('../database/queries/tables_queries');
 db = require('../config/db.config');
 
 (() => {

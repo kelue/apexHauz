@@ -1,4 +1,4 @@
-const { DB_NAME } = require('../config/db.config');
+const { DB_NAME } = require('../../config/db.config');
 
 
 const createDB = `CREATE DATABASE IF NOT EXISTS ${DB_NAME}`;
@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )`;
-
 
 const createTableCategories = `
 CREATE TABLE IF NOT EXISTS categories (
@@ -48,16 +47,6 @@ CREATE TABLE IF NOT EXISTS properties (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )`;
 
-
-const createNewUser = `
-INSERT INTO users VALUES(null, ? , ? , ? , ? , ? , ? , ? , NOW(), NOW())
-`;
-
-
-const findUserByEmail = `
-SELECT * FROM users WHERE email = ? `;
-
-
 const createPropertiesUserForeignKeys = `
 ALTER TABLE properties ADD CONSTRAINT properties_user_id_users_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 `;
@@ -67,26 +56,12 @@ const createPropertiesCategoriesForeignKeys = `
 ALTER TABLE properties ADD CONSTRAINT properties_categories_id_categories_id FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE;
 `;
 
-
-const getAllProperties = `
-SELECT * FROM properties
-`;
-
-
-const getPropertyById = `
-SELECT * FROM properties WHERE id = ?
-`;
-
 module.exports = {
     createDB,
     dropDB,
     createTableUsers,
     createTableCategories,
     createTableProperties,
-    createNewUser,
-    findUserByEmail,
     createPropertiesUserForeignKeys,
-    createPropertiesCategoriesForeignKeys,
-    getAllProperties,
-    getPropertyById
-};
+    createPropertiesCategoriesForeignKeys
+}

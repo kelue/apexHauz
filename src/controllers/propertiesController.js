@@ -40,12 +40,15 @@ exports.getPropertiesById = (req, res) => {
 };
 
 
+/* A function that creates a property. */
 exports.createProperties = async(req, res) => {
-    /* A function that creates a property. */
+    /* Destructuring the request body. */
     const { user_id, category_id, price, state, city, address, description, image, status } = req.body;
 
+    /* Destructuring the createProperties function. */
     const { errors, valid } = createProperties(state, city, address, description);
 
+    /* Checking if the validation is valid or not. */
     if (!valid) {
         return Response.send(
             res.status(401),
@@ -54,9 +57,12 @@ exports.createProperties = async(req, res) => {
         )
     } else {
         /* Destructuring the request body. */
+        /* Uploading the image to cloudinary. */
         try {
             //upload.single(image);
+            /* Uploading the image to cloudinary. */
             Cloudinary.UploadImage(image, (err, data) => {
+                /* Checking if there is an error and returning an error message if there is an error. */
                 if (err)
                     res.status(500).json({
                         status: 'error',
@@ -64,10 +70,14 @@ exports.createProperties = async(req, res) => {
                     });
 
                 else {
+                    /* Destructuring the data object. */
                     const { secure_url, public_id } = data;
+                    /* Destructuring the data object. */
                     const image_url = secure_url;
                     const image_id = public_id;
+                    /* Creating a new instance of the Properties class. */
                     const properties = new Properties(user_id, category_id, price, state, city, address, description, image_url, image_id, status);
+                    /* Creating a new property. */
                     Properties.createProperties(properties, (err, data) => {
                         if (err) {
                             res.status(500).json({
@@ -75,6 +85,7 @@ exports.createProperties = async(req, res) => {
                                 error: err.message || "Some error occurred while creating the Property."
                             });
                         } else {
+                            /* Returning a response object. */
                             res.status(201).json({
                                 status: 'success',
                                 data: {

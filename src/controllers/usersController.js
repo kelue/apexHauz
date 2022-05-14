@@ -17,7 +17,7 @@ const db = require("../config/db.config");
 const { generate: generateToken } = require('../utils/token');
 
 /* Importing the findUserByEmail function from the queries.js file. */
-const { findUserByEmail: findUserByEmailQuery } = require('../database/queries');
+const { findUserByEmail: findUserByEmailQuery } = require('../database/queries/users');
 
 
 /* A function that returns all users in the database. */

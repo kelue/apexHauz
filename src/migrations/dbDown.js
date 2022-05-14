@@ -1,4 +1,4 @@
-const { dropDB: dropDBQuery } = require('../database/queries');
+const { dropDB: dropDBQuery } = require('../database/queries/tables_queries');
 db = require('../config/db.config');
 
 (() => {
