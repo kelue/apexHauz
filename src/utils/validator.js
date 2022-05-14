@@ -2,7 +2,7 @@
 const validator = require('validator')
 
 /* Exporting the signup function. */
-module.exports.signup = (email, password, phone, first_name, last_name, address) => {
+const signup = (email, password, phone, first_name, last_name, address) => {
     /* Creating an empty object. */
     const errors = {};
     /* Checking if the phone number is empty and if it is, it will return an error message. */
@@ -54,7 +54,7 @@ module.exports.signup = (email, password, phone, first_name, last_name, address)
     }
 }
 
-module.exports.signin = (email, password) => {
+const signin = (email, password) => {
     const errors = {};
 
     /* Checking if the email is empty and if it is, it will return an error message. */
@@ -80,4 +80,31 @@ module.exports.signin = (email, password) => {
         errors,
         valid: Object.keys(errors).length < 1
     }
+}
+
+const createProperties = (type, state, city, address, price) => {
+    const errors = {};
+    if (validator.isEmpty(type)) {
+        errors["type"] = "Property Type is Required";
+    }
+    if (validator.isEmpty(state)) {
+        errors["state"] = "Property State is Required";
+    }
+    if (validator.isEmpty(city)) {
+        errors["city"] = "Property City is Required";
+    }
+    if (validator.isEmpty(address)) {
+        errors["address"] = "Property Address is Required";
+    }
+    return {
+
+        errors,
+        valid: Object.keys(errors).length < 1
+    }
+}
+
+module.exports = {
+    signup,
+    signin,
+    createProperties
 }
