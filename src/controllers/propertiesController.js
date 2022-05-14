@@ -42,9 +42,9 @@ exports.getPropertiesById = (req, res) => {
 
 exports.createProperties = async(req, res) => {
     /* A function that creates a property. */
-    const { type, state, city, address, price, image } = req.body;
-    // const { image_path } = req.file;
-    const { errors, valid } = createProperties(type, state, city, address);
+    const { user_id, category_id, price, state, city, address, description, image, status } = req.body;
+
+    const { errors, valid } = createProperties(state, city, address, description);
 
     if (!valid) {
         return Response.send(
@@ -64,79 +64,45 @@ exports.createProperties = async(req, res) => {
                     });
 
                 else {
-                    const { image_secure_url, image_public_id } = data;
-                    res.status(201).json({
-                        status: 'success',
-                        data: {
-                            image_path: secure_url,
-                            image_id: public_id
-                        }
-                    })
-
-                    // const newProperties = new Properties({
-                    //     type,
-                    //     state,
-                    //     city,
-                    //     address,
-                    //     price,
-                    //     image_path
+                    const { secure_url, public_id } = data;
+                    // res.status(201).json({
+                    //     status: 'success',
+                    //     data: {
+                    //         image_path: secure_url,
+                    //         image_id: public_id
+                    //     }
                     // });
-                    // /* Saving the property to the database. */
-                    // newProperties.save((err, data) => {
-                    //     if (err)
-                    //         res.status(500).send({
-                    //             message: err.message || "Some error occurred while creating the Property."
-                    //         });
-                    //     else res.send(data);
-                    // });
-                    const properties = new Properties(type, state, city, address, price, image_secure_url, image_public_id);
+                    const image_url = secure_url;
+                    const image_id = public_id;
+                    const properties = new Properties(user_id, category_id, price, state, city, address, description, image_url, image_id, status);
                     Properties.createProperties(properties, (err, data) => {
-                        if (err)
+                        if (err) {
                             res.status(500).json({
                                 status: 'error',
                                 error: err.message || "Some error occurred while creating the Property."
                             });
-                        else
+                        } else {
                             res.status(201).json({
                                 status: 'success',
                                 data: {
                                     id: data.id,
-                                    status: data.status || "available",
+                                    user_id: data.user_id,
+                                    category_id: data.category_id,
                                     price: data.price,
                                     state: data.state,
                                     city: data.city,
                                     address: data.address,
-                                    type: data.type,
+                                    description: data.description,
                                     image_url: data.image_url,
+                                    image_id: data.image_id,
+                                    status: data.status || "available",
                                     created_on: data.created_on
                                 }
-                            })
+                            });
+                        }
                     });
                 }
             });
-            // const properties = new Properties(type, state, city, address, price, result.secure_url, result.public_id);
-            // Properties.createProperties(properties, (err, data) => {
-            //     if (err)
-            //         res.status(500).json({
-            //             status: 'error',
-            //             error: err.message || "Some error occurred while creating the Property."
-            //         });
-            //     else
-            //         res.status(201).json({
-            //             status: 'success',
-            //             data: {
-            //                 id: data.id,
-            //                 status: data.status || "available",
-            //                 price: data.price,
-            //                 state: data.state,
-            //                 city: data.city,
-            //                 address: data.address,
-            //                 type: data.type,
-            //                 image_url: data.image_url,
-            //                 created_on: data.created_on
-            //             }
-            //         })
-            // });
         } catch (err) {
             console.log(err);
         }
