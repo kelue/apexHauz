@@ -2,7 +2,7 @@
 const db = require("../config/db.config");
 
 /* It's importing the createNewUser function from the queries.js file. */
-const { createNewUser: createNewUserQuery } = require('../database/queries');
+const { createNewUser: createNewUserQuery } = require('../database/queries/users');
 
 
 /* It's a class that handles all the database queries for the users table. */

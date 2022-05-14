@@ -11,7 +11,6 @@ const createNewProperty = `
 INSERT INTO properties VALUES(null, ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , NOW(), NOW())
 `;
 
-
 module.exports = {
     getAllProperties,
     getPropertyById,

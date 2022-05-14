@@ -70,7 +70,13 @@ class Properties {
         });
     }
 
+    /**
+     * It creates a new property in the database
+     * @param properties - {
+     * @param result - is the callback function that returns the result of the query.
+     */
     static createProperties(properties, result) {
+        /* Creating a new property in the database. */
         db.query(createNewPropertyQuery, [
             properties.user_id,
             properties.category_id,
@@ -88,6 +94,7 @@ class Properties {
                 result(err, null);
                 return;
             } else {
+                /* Returning the result of the query. */
                 const info = {
                     id: res.insertId,
                     user_id: properties.user_id,
@@ -101,7 +108,9 @@ class Properties {
                     image_id: properties.image_id,
                     status: properties.status
                 };
+                /* Returning the result of the query. */
                 result(null, info);
+                /* Returning the result of the query. */
                 return;
             }
         });

@@ -1,4 +1,4 @@
-const { createDB: createDBQuery } = require('../database/queries');
+const { createDB: createDBQuery } = require('../database/queries/tables_queries');
 db = require('../config/db.config');
 
 (() => {
