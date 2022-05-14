@@ -3,7 +3,7 @@ const db = require("../config/db.config");
 const {
     getAllProperties: getAllPropertiesQuery,
     getPropertyById: getPropertyByIdQuery,
-    createNewProperty: createPropertyQuery,
+    createNewProperty: createNewPropertyQuery,
 } = require("../database/queries/properties");
 
 class Properties {
@@ -17,13 +17,17 @@ class Properties {
      * @param image - the image file
      * @param user_id - the id of the user who created the product
      */
-    constructor(title, description, price, category, image, user_id) {
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.image = image;
-        this.category = category;
+    constructor(user_id, category_id, price, state, city, address, description, image_url, image_id, status) {
         this.user_id = user_id;
+        this.category_id = category_id;
+        this.price = price;
+        this.state = state;
+        this.city = city;
+        this.address = address;
+        this.description = description;
+        this.image_url = image_url;
+        this.image_id = image_id;
+        this.status = status;
     }
 
     /**
@@ -67,7 +71,40 @@ class Properties {
     }
 
     static createProperties(properties, result) {
-        db.query(createNewPropertiesQuery, []);
+        db.query(createNewPropertyQuery, [
+            properties.user_id,
+            properties.category_id,
+            properties.price,
+            properties.state,
+            properties.city,
+            properties.address,
+            properties.description,
+            properties.image_url,
+            properties.image_id,
+            properties.status
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+            } else {
+                const info = {
+                    id: res.insertId,
+                    user_id: properties.user_id,
+                    category_id: properties.category_id,
+                    price: properties.price,
+                    state: properties.state,
+                    city: properties.city,
+                    address: properties.address,
+                    description: properties.description,
+                    image_url: properties.image_url,
+                    image_id: properties.image_id,
+                    status: properties.status
+                };
+                result(null, info);
+                return;
+            }
+        });
     }
 }
 

@@ -8,6 +8,7 @@ cloudinary.config({
     secure: true
 });
 
+
 class Cloudinary {
     static UploadImage(image, callback) {
         cloudinary.uploader.upload(image, (error, result) => {
