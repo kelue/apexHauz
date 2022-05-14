@@ -5,7 +5,7 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "dev": "nodemon server.js",
+        "dev": "nodemon",
         "db:up": "node src/migrations/dbUp.js",
         "db:down": "node src/migrations/dbDown.js",
         "tables:up": "node src/migrations/tablesUp.js",
