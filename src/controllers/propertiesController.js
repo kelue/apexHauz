@@ -65,13 +65,6 @@ exports.createProperties = async(req, res) => {
 
                 else {
                     const { secure_url, public_id } = data;
-                    // res.status(201).json({
-                    //     status: 'success',
-                    //     data: {
-                    //         image_path: secure_url,
-                    //         image_id: public_id
-                    //     }
-                    // });
                     const image_url = secure_url;
                     const image_id = public_id;
                     const properties = new Properties(user_id, category_id, price, state, city, address, description, image_url, image_id, status);

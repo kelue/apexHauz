@@ -8,10 +8,13 @@ const { hasAuth } = require('../../../middleware/hasAuth')
 
 /* Exporting the routes to the server.js file. */
 module.exports = app => {
+    /* This is a route that is used to get all the properties. */
     router.get("/properties", propertiesController.getAllProperties);
 
+    /* This is a route that is used to create a new property. */
     router.post("/properties", propertiesController.createProperties);
 
+    /* This is a route that is used to get a property by its id. */
     router.get("/properties/:id", propertiesController.getPropertiesById);
 
     app.use('/api/v1', router);

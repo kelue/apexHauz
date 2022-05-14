@@ -82,11 +82,8 @@ const signin = (email, password) => {
     }
 }
 
-const createProperties = (description, state, city, address) => {
+const createProperties = (state, city, address) => {
     const errors = {};
-    if (validator.isEmpty(description)) {
-        errors["description"] = "Property Description is Required";
-    }
     if (validator.isEmpty(state)) {
         errors["state"] = "Property State is Required";
     }
