@@ -1,5 +1,6 @@
 const express = require("express");
 
+const imageRouter = require('./test/imageUpload');
 
 const app = express();
 
@@ -17,11 +18,12 @@ app.get("/", (req, res) => {
     res.json({ message: "Welcome to SideHustle Node REST API with express." });
 });
 
+app.use('/', imageRouter);
 
-require("./routes/api/v1/usersRoutes.js")(app);
+// require("./routes/api/v1/usersRoutes.js")(app);
 
 // set port, listen for requests
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.SERVER_PORT ?? 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}.`);
 });

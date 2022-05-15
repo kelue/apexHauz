@@ -1,4 +1,5 @@
 const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -16,14 +17,18 @@ cloudinary.config({
  *  
  * */
 
-const uploadImageToCloudinary = async (image) => {
-    try {
-        const uploadedImage = await cloudinary.uploader.upload(image);
-        return uploadedImage;
-    } catch (error) {
-        throw new Error('Image upload to cloud failed!');
-    }
+const uploadImageToCloudinary = (image) => {
+    return cloudinary.uploader.upload(image)
 }
+/* const uploadImageToCloudinary = (image) => {
+    cloudinary.uploader.upload(image, (err, uploadedImage) => {
+        if (err) {
+            throw err;
+        }
+        console.log(uploadedImage);
+        return uploadedImage;
+    });
+} */
 
 /**
  * 
@@ -38,7 +43,8 @@ const deleteImageFromCloudinary = async (image_id) => {
     try {
         await cloudinary.uploader.destroy(image_id);
     } catch (error) {
-        throw new Error('Image deletion from cloud failed!');
+        console.log(error);
+        //throw new Error('Image deletion from cloud failed!');
     }
 }
 
