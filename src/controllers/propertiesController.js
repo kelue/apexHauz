@@ -151,56 +151,63 @@ exports.createProperties = async(req, res) => {
 
 exports.updatePropertyAsSold = (req, res) => {
     const { id } = req.params;
-    const status = 'sold';
-    const { errors, valid } = validateIdAsNumeric(id);
-
-    if (!valid) {
-        return Response.send(
-            res.status(401),
-            'error',
-            errors
-        )
+    if (!(id)) {
+        res.status(401).json({
+            status: 'error',
+            error: "All fields are required"
+        });
     } else {
-        db.query(getPropertyByIdQuery, [
-            id
-        ], function(err, result) {
-            if (result.length > 0) {
-                Properties.updatePropertyStatus(id, status, (err, data) => {
-                    if (err) {
-                        console.log("error: ", err);
-                    } else {
-                        if (result[0].status === 'available') {
-                            res.status(401).json({
-                                status: 'success',
-                                data: {
-                                    id: result[0].id,
-                                    user_id: result[0].user_id,
-                                    category_id: result[0].category_id,
-                                    price: result[0].price,
-                                    state: result[0].state,
-                                    city: result[0].city,
-                                    address: result[0].address,
-                                    description: result[0].description,
-                                    image_url: result[0].image_url,
-                                    image_id: result[0].image_id,
-                                    status: 'sold',
-                                    created_on: result[0].created_on
-                                }
-                            });
+        const status = 'sold';
+        const { errors, valid } = validateIdAsNumeric(id);
+
+        if (!valid) {
+            return Response.send(
+                res.status(401),
+                'error',
+                errors
+            )
+        } else {
+            db.query(getPropertyByIdQuery, [
+                id
+            ], function(err, result) {
+                if (result.length > 0) {
+                    Properties.updatePropertyStatus(id, status, (err, data) => {
+                        if (err) {
+                            console.log("error: ", err);
                         } else {
-                            res.status(401).json({
-                                status: 'error',
-                                error: "This Property has Already Been Sold",
-                            });
+                            if (result[0].status === 'available') {
+                                res.status(401).json({
+                                    status: 'success',
+                                    data: {
+                                        id: result[0].id,
+                                        user_id: result[0].user_id,
+                                        category_id: result[0].category_id,
+                                        price: result[0].price,
+                                        state: result[0].state,
+                                        city: result[0].city,
+                                        address: result[0].address,
+                                        description: result[0].description,
+                                        image_url: result[0].image_url,
+                                        image_id: result[0].image_id,
+                                        status: 'sold',
+                                        created_on: result[0].created_on
+                                    }
+                                });
+                            } else {
+                                res.status(401).json({
+                                    status: 'error',
+                                    error: "This Property has Already Been Sold",
+                                });
+                            }
                         }
-                    }
-                })
-            } else {
-                res.status(401).json({
-                    status: 'error',
-                    error: "This Property Does Not Exist",
-                });
-            }
-        })
+                    })
+                } else {
+                    res.status(401).json({
+                        status: 'error',
+                        error: "This Property Does Not Exist",
+                    });
+                }
+            })
+        }
     }
 };
