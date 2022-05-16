@@ -4,6 +4,7 @@ const {
     getAllProperties: getAllPropertiesQuery,
     getPropertyById: getPropertyByIdQuery,
     createNewProperty: createNewPropertyQuery,
+    updatePropertyStatus: updatePropertyStatusQuery
 } = require("../database/queries/properties");
 
 class Properties {
@@ -114,6 +115,21 @@ class Properties {
                 return;
             }
         });
+    }
+    static updatePropertyStatus(id, status, res) {
+        db.query(updatePropertyStatusQuery, [
+            status,
+            id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+            } else {
+                result(null, res);
+                return;
+            }
+        })
     }
 }
 
