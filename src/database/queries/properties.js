@@ -11,8 +11,14 @@ const createNewProperty = `
 INSERT INTO properties VALUES(null, ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , NOW(), NOW())
 `;
 
+const updatePropertyStatus = `
+UPDATE properties SET status = ? WHERE id = ?
+`;
+
+
 module.exports = {
     getAllProperties,
     getPropertyById,
-    createNewProperty
+    createNewProperty,
+    updatePropertyStatus
 }

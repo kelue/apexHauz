@@ -3,8 +3,8 @@ const router = require("express").Router();
 /* Importing the userController.js file. */
 const userController = require('../../../controllers/usersController');
 
-/* Importing the hasAuth middleware. */
-const { hasAuth } = require('../../../middleware/hasAuth')
+// /* Importing the hasAuth middleware. */
+// const { hasAuth } = require('../../../middleware/hasAuth')
 
 /* Exporting the routes to the server.js file. */
 module.exports = app => {

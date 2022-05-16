@@ -1,14 +1,13 @@
 const Properties = require('../models/properties.js');
 const Cloudinary = require('../utils/cloudinary');
-const { createProperties } = require('../utils/validator');
-const fs = require("fs");
+const { createProperties, validateIdAsNumeric } = require('../utils/validator');
 
 
 /* Importing the database connection. */
 const db = require("../config/db.config");
-const { upload } = require("../utils/multer");
 const { findUserById: findUserByIdQuery } = require('../database/queries/users');
 const { findCategoryById: findCategoryByIdQuery } = require('../database/queries/categories');
+const { getPropertyById: getPropertyByIdQuery, updatePropertyStatus: updatePropertyStatusQuery } = require('../database/queries/properties');
 
 /* A function that returns a response object. */
 const Response = require("../utils/responseHandler.js");
@@ -75,6 +74,7 @@ exports.createProperties = async(req, res) => {
                         try {
                             //upload.single(image);
                             /* Uploading the image to cloudinary. */
+                            // fs.unlink(req.file.path);
                             Cloudinary.UploadImage(image, (err, data) => {
                                 /* Checking if there is an error and returning an error message if there is an error. */
                                 if (err)
@@ -138,5 +138,54 @@ exports.createProperties = async(req, res) => {
                 });
             }
         });
+    }
+};
+
+exports.updatePropertyAsSold = (req, res) => {
+    const { id } = req.params;
+    const status = 'sold';
+    const { errors, valid } = validateIdAsNumeric(id);
+
+    if (!valid) {
+        return Response.send(
+            res.status(401),
+            'error',
+            errors
+        )
+    } else {
+        db.query(getPropertyByIdQuery, [
+            id
+        ], function(err, result) {
+            if (result.length > 0) {
+                Properties.updatePropertyStatus(id, status, (err, data) => {
+                    if (err) {
+                        console.log("error: ", err);
+                    } else {
+                        res.status(401).json({
+                            status: 'success',
+                            data: {
+                                id: data.id,
+                                user_id: data.user_id,
+                                category_id: data.category_id,
+                                price: data.price,
+                                state: data.state,
+                                city: data.city,
+                                address: data.address,
+                                description: data.description,
+                                image_url: data.image_url,
+                                image_id: data.image_id,
+                                status: data.status,
+                                created_on: data.created_on
+                            }
+                        });
+                    }
+                })
+            } else {
+                res.status(401).json({
+                    status: 'error',
+                    error: "This Property Does Not Exist",
+                });
+            }
+        })
     }
 };
