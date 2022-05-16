@@ -50,94 +50,102 @@ exports.createProperties = async(req, res) => {
     /* Destructuring the request body. */
     const { user_id, category_id, price, state, city, address, description, image, status } = req.body;
 
-    /* Destructuring the createProperties function. */
-    const { errors, valid } = createProperties(state, city, address, description);
-
-    /* Checking if the validation is valid or not. */
-    if (!valid) {
-        return Response.send(
-            res.status(401),
-            'error',
-            errors
-        )
-    } else {
-        /* Destructuring the request body. */
-        /* Uploading the image to cloudinary. */
-        db.query(findUserByIdQuery, [
-            user_id
-        ], function(err, result) {
-            if (result.length > 0) {
-                db.query(findCategoryByIdQuery, [
-                    category_id
-                ], function(err, result) {
-                    if (result.length > 0) {
-                        try {
-                            //upload.single(image);
-                            /* Uploading the image to cloudinary. */
-                            // fs.unlink(req.file.path);
-                            Cloudinary.UploadImage(image, (err, data) => {
-                                /* Checking if there is an error and returning an error message if there is an error. */
-                                if (err)
-                                    res.status(500).json({
-                                        status: 'error',
-                                        error: err.message || "Some error occurred while uploading Image"
-                                    });
-
-                                else {
-                                    /* Destructuring the data object. */
-                                    const { secure_url, public_id } = data;
-                                    /* Destructuring the data object. */
-                                    const image_url = secure_url;
-                                    const image_id = public_id;
-                                    /* Creating a new instance of the Properties class. */
-                                    const properties = new Properties(user_id, category_id, price, state, city, address, description, image_url, image_id, status);
-                                    /* Creating a new property. */
-                                    Properties.createProperties(properties, (err, data) => {
-                                        if (err) {
-                                            res.status(500).json({
-                                                status: 'error',
-                                                error: err.message || "Some error occurred while creating the Property."
-                                            });
-                                        } else {
-                                            /* Returning a response object. */
-                                            res.status(201).json({
-                                                status: 'success',
-                                                data: {
-                                                    id: data.id,
-                                                    user_id: data.user_id,
-                                                    category_id: data.category_id,
-                                                    price: data.price,
-                                                    state: data.state,
-                                                    city: data.city,
-                                                    address: data.address,
-                                                    description: data.description,
-                                                    image_url: data.image_url,
-                                                    image_id: data.image_id,
-                                                    status: data.status || "available",
-                                                    created_on: data.created_on
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    } else {
-                        res.status(401).json({
-                            status: 'error',
-                            error: "Category Does Not Exist",
-                        });
-                    }
-                });
-            } else {
-                res.status(401).json({
-                    status: 'error',
-                    error: "User Does Not Exist",
-                });
-            }
+    /* Checking if all the fields are filled. */
+    if (!(user_id && category_id && price && state && city && address && description && image && status)) {
+        res.status(401).json({
+            status: 'error',
+            error: "All fields are required"
         });
+    } else {
+
+        /* Destructuring the createProperties function. */
+        const { errors, valid } = createProperties(state, city, address, description);
+        /* Checking if the validation is valid or not. */
+        if (!valid) {
+            return Response.send(
+                res.status(401),
+                'error',
+                errors
+            )
+        } else {
+            /* Destructuring the request body. */
+            /* Uploading the image to cloudinary. */
+            db.query(findUserByIdQuery, [
+                user_id
+            ], function(err, result) {
+                if (result.length > 0) {
+                    db.query(findCategoryByIdQuery, [
+                        category_id
+                    ], function(err, result) {
+                        if (result.length > 0) {
+                            try {
+                                //upload.single(image);
+                                /* Uploading the image to cloudinary. */
+                                // fs.unlink(req.file.path);
+                                Cloudinary.UploadImage(image, (err, data) => {
+                                    /* Checking if there is an error and returning an error message if there is an error. */
+                                    if (err)
+                                        res.status(500).json({
+                                            status: 'error',
+                                            error: err.message || "Some error occurred while uploading Image"
+                                        });
+
+                                    else {
+                                        /* Destructuring the data object. */
+                                        const { secure_url, public_id } = data;
+                                        /* Destructuring the data object. */
+                                        const image_url = secure_url;
+                                        const image_id = public_id;
+                                        /* Creating a new instance of the Properties class. */
+                                        const properties = new Properties(user_id, category_id, price, state, city, address, description, image_url, image_id, status);
+                                        /* Creating a new property. */
+                                        Properties.createProperties(properties, (err, data) => {
+                                            if (err) {
+                                                res.status(500).json({
+                                                    status: 'error',
+                                                    error: err.message || "Some error occurred while creating the Property."
+                                                });
+                                            } else {
+                                                /* Returning a response object. */
+                                                res.status(201).json({
+                                                    status: 'success',
+                                                    data: {
+                                                        id: data.id,
+                                                        user_id: data.user_id,
+                                                        category_id: data.category_id,
+                                                        price: data.price,
+                                                        state: data.state,
+                                                        city: data.city,
+                                                        address: data.address,
+                                                        description: data.description,
+                                                        image_url: data.image_url,
+                                                        image_id: data.image_id,
+                                                        status: data.status || "available",
+                                                        created_on: data.created_on
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            } catch (err) {
+                                console.log(err);
+                            }
+                        } else {
+                            res.status(401).json({
+                                status: 'error',
+                                error: "Category Does Not Exist",
+                            });
+                        }
+                    });
+                } else {
+                    res.status(401).json({
+                        status: 'error',
+                        error: "User Does Not Exist",
+                    });
+                }
+            });
+        }
     }
 };
 
@@ -161,23 +169,30 @@ exports.updatePropertyAsSold = (req, res) => {
                     if (err) {
                         console.log("error: ", err);
                     } else {
-                        res.status(401).json({
-                            status: 'success',
-                            data: {
-                                id: data.id,
-                                user_id: data.user_id,
-                                category_id: data.category_id,
-                                price: data.price,
-                                state: data.state,
-                                city: data.city,
-                                address: data.address,
-                                description: data.description,
-                                image_url: data.image_url,
-                                image_id: data.image_id,
-                                status: data.status,
-                                created_on: data.created_on
-                            }
-                        });
+                        if (result[0].status === 'available') {
+                            res.status(401).json({
+                                status: 'success',
+                                data: {
+                                    id: result[0].id,
+                                    user_id: result[0].user_id,
+                                    category_id: result[0].category_id,
+                                    price: result[0].price,
+                                    state: result[0].state,
+                                    city: result[0].city,
+                                    address: result[0].address,
+                                    description: result[0].description,
+                                    image_url: result[0].image_url,
+                                    image_id: result[0].image_id,
+                                    status: 'sold',
+                                    created_on: result[0].created_on
+                                }
+                            });
+                        } else {
+                            res.status(401).json({
+                                status: 'error',
+                                error: "This Property has Already Been Sold",
+                            });
+                        }
                     }
                 })
             } else {
