@@ -116,18 +116,16 @@ class Properties {
             }
         });
     }
-    static updatePropertyStatus(id, status, res) {
+    static updatePropertyStatus(id, status, next) {
         db.query(updatePropertyStatusQuery, [
             status,
             id
         ], (err, res) => {
             if (err) {
                 console.log("error: ", err);
-                result(err, null);
                 return;
             } else {
-                result(null, res);
-                return;
+                return next();
             }
         })
     }
