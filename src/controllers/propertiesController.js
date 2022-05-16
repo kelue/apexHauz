@@ -218,3 +218,7 @@ exports.updatePropertyAsSold = (req, res) => {
         }
     }
 };
+
+exports.deleteProperties = (req, res) => {
+
+}
