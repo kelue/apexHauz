@@ -5,7 +5,7 @@ const {
     createPropertiesUserForeignKeys: createPropertiesUserForeignKeysQuery,
     createPropertiesCategoriesForeignKeys: createPropertiesCategoriesForeignKeysQuery,
 } = require('../database/queries/tables_queries');
-db = require('../config/db.config');
+const { connection: db } = require('../config/db.config');
 
 (() => {
     db.query(createTableUsersQuery, (err, _) => {

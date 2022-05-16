@@ -19,10 +19,10 @@ exports.getAllProperties = (req, res) => {
         /* A callback function that returns an error message if there is an error and returns the data
         if there is no error. */
         if (err)
-        /* Returning an error message if there is an error. */
+            /* Returning an error message if there is an error. */
             res.status(500).send({
-            message: err.message || "Some error occurred while retrieving properties."
-        });
+                message: err.message || "Some error occurred while retrieving properties."
+            });
         else res.send(data);
     });
 }
@@ -47,7 +47,8 @@ exports.getPropertiesById = (req, res) => {
 
 
 /* A function that creates a property. */
-exports.createProperties = async(req, res) => {
+exports.createProperties = async (req, res) => {
+    return res.send(req.file);
     /* Destructuring the request body. */
     const { user_id, category_id, price, state, city, address, description, image, status } = req.body;
 
@@ -66,11 +67,11 @@ exports.createProperties = async(req, res) => {
         /* Uploading the image to cloudinary. */
         db.query(findUserByIdQuery, [
             user_id
-        ], function(err, result) {
+        ], function (err, result) {
             if (result.length > 0) {
                 db.query(findCategoryByIdQuery, [
                     category_id
-                ], function(err, result) {
+                ], function (err, result) {
                     if (result.length > 0) {
                         try {
                             //upload.single(image);
