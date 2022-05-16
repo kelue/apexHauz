@@ -171,36 +171,43 @@ exports.updatePropertyAsSold = (req, res) => {
                 id
             ], function(err, result) {
                 if (result.length > 0) {
-                    Properties.updatePropertyStatus(id, status, (err, data) => {
-                        if (err) {
-                            console.log("error: ", err);
-                        } else {
-                            if (result[0].status === 'available') {
-                                res.status(401).json({
-                                    status: 'success',
-                                    data: {
-                                        id: result[0].id,
-                                        user_id: result[0].user_id,
-                                        category_id: result[0].category_id,
-                                        price: result[0].price,
-                                        state: result[0].state,
-                                        city: result[0].city,
-                                        address: result[0].address,
-                                        description: result[0].description,
-                                        image_url: result[0].image_url,
-                                        image_id: result[0].image_id,
-                                        status: 'sold',
-                                        created_on: result[0].created_on
-                                    }
-                                });
+                    if (result[0].user_id == req.body.user_id) {
+                        Properties.updatePropertyStatus(id, status, (err, data) => {
+                            if (err) {
+                                console.log("error: ", err);
                             } else {
-                                res.status(401).json({
-                                    status: 'error',
-                                    error: "This Property has Already Been Sold",
-                                });
+                                if (result[0].status === 'available') {
+                                    res.status(401).json({
+                                        status: 'success',
+                                        data: {
+                                            id: result[0].id,
+                                            user_id: result[0].user_id,
+                                            category_id: result[0].category_id,
+                                            price: result[0].price,
+                                            state: result[0].state,
+                                            city: result[0].city,
+                                            address: result[0].address,
+                                            description: result[0].description,
+                                            image_url: result[0].image_url,
+                                            image_id: result[0].image_id,
+                                            status: 'sold',
+                                            created_on: result[0].created_on
+                                        }
+                                    });
+                                } else {
+                                    res.status(401).json({
+                                        status: 'error',
+                                        error: "This Property has Already Been Sold",
+                                    });
+                                }
                             }
-                        }
-                    })
+                        })
+                    } else {
+                        res.status(401).json({
+                            status: 'error',
+                            error: "Oops You Are Not Authorized To Update This Property",
+                        });
+                    }
                 } else {
                     res.status(401).json({
                         status: 'error',
