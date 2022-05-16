@@ -20,6 +20,8 @@ module.exports = app => {
 
     router.patch("/properties/:id/sold", hasAuth, propertiesController.updatePropertyAsSold);
 
+    router.delete("/properties/:id", hasAuth, propertiesController.deleteProperties);
+
     /* A middleware that is used to catch any errors that may occur in the application. */
     app.use('/api/v1', router);
 
