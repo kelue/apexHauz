@@ -7,7 +7,7 @@ const { createProperties, validateIdAsNumeric } = require('../utils/validator');
 const db = require("../config/db.config");
 const { findUserById: findUserByIdQuery } = require('../database/queries/users');
 const { findCategoryById: findCategoryByIdQuery, findCategoryByName: findCategoryByNameQuery } = require('../database/queries/categories');
-const { getPropertyById: getPropertyByIdQuery, updatePropertyStatus: updatePropertyStatusQuery } = require('../database/queries/properties');
+const { getPropertyById: getPropertyByIdQuery, updatePropertyStatus: updatePropertyStatusQuery, getPropertyByCategoryName: getPropertyByCategoryNameQuery } = require('../database/queries/properties');
 
 /* A function that returns a response object. */
 const Response = require("../utils/responseHandler.js");
@@ -291,22 +291,30 @@ exports.searchForProperty = (req, res) => {
         });
     } else {
         db.query(findCategoryByNameQuery, [
-                type
-            ], function(err, result) {
-                if (result.length > 0) {
-
-                } else {
-                    res.status(401).json({
-                        status: 'error',
-                        error: "Oops, there's no Property with this type"
-                    });
-                }
-            })
-            // res.json({
-            //     status: 'success',
-            //     data: {
-            //         type: type
-            //     }
-            // })
+            type
+        ], function(err, result) {
+            if (result.length > 0) {
+                db.query(getPropertyByCategoryNameQuery, [
+                    type
+                ], function(err, result) {
+                    if (result.length > 0) {
+                        res.status(201).json({
+                            status: 'success',
+                            data: result
+                        });
+                    } else {
+                        res.status(401).json({
+                            status: 'error',
+                            error: "Oops, there's no Property with this type"
+                        });
+                    }
+                })
+            } else {
+                res.status(401).json({
+                    status: 'error',
+                    error: "Oops, there's no Category with this type"
+                });
+            }
+        })
     }
 }
