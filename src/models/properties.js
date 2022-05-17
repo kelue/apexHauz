@@ -4,7 +4,8 @@ const {
     getAllProperties: getAllPropertiesQuery,
     getPropertyById: getPropertyByIdQuery,
     createNewProperty: createNewPropertyQuery,
-    updatePropertyStatus: updatePropertyStatusQuery
+    updatePropertyStatus: updatePropertyStatusQuery,
+    deleteProperty: deletePropertyQuery
 } = require("../database/queries/properties");
 
 class Properties {
@@ -119,6 +120,18 @@ class Properties {
     static updatePropertyStatus(id, status, next) {
         db.query(updatePropertyStatusQuery, [
             status,
+            id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                return next();
+            }
+        })
+    }
+    static deleteProperty(id, next) {
+        db.query(deletePropertyQuery, [
             id
         ], (err, res) => {
             if (err) {

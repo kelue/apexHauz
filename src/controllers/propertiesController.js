@@ -219,6 +219,65 @@ exports.updatePropertyAsSold = (req, res) => {
     }
 };
 
+/* The above code is deleting a property from the database. */
 exports.deleteProperties = (req, res) => {
+    const { id } = req.params;
+    if (!(id)) {
+        res.status(401).json({
+            status: 'error',
+            error: "All fields are required"
+        });
+    } else {
+        const { errors, valid } = validateIdAsNumeric(id);
 
-}
+        if (!valid) {
+            return Response.send(
+                res.status(401),
+                'error',
+                errors
+            )
+        } else {
+            db.query(getPropertyByIdQuery, [
+                id
+            ], function(err, result) {
+                if (result.length > 0) {
+                    if (result[0].user_id == req.body.user_id) {
+                        Properties.deleteProperty(id, (err, data) => {
+                            if (err) {
+                                console.log("error: ", err);
+                            } else {
+                                res.status(201).json({
+                                    status: 'success',
+                                    data: {
+                                        id: result[0].id,
+                                        user_id: result[0].user_id,
+                                        category_id: result[0].category_id,
+                                        price: result[0].price,
+                                        state: result[0].state,
+                                        city: result[0].city,
+                                        address: result[0].address,
+                                        description: result[0].description,
+                                        image_url: result[0].image_url,
+                                        image_id: result[0].image_id,
+                                        status: result[0].status,
+                                        created_on: result[0].created_on
+                                    }
+                                });
+                            }
+                        })
+                    } else {
+                        res.status(401).json({
+                            status: 'error',
+                            error: "Oops You Are Not Authorized To Delete This Property",
+                        });
+                    }
+                } else {
+                    res.status(401).json({
+                        status: 'error',
+                        error: "This Property Does Not Exist",
+                    });
+                }
+            })
+        }
+    }
+};
