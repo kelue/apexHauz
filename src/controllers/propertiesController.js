@@ -6,7 +6,7 @@ const { createProperties, validateIdAsNumeric } = require('../utils/validator');
 /* Importing the database connection. */
 const db = require("../config/db.config");
 const { findUserById: findUserByIdQuery } = require('../database/queries/users');
-const { findCategoryById: findCategoryByIdQuery } = require('../database/queries/categories');
+const { findCategoryById: findCategoryByIdQuery, findCategoryByName: findCategoryByNameQuery } = require('../database/queries/categories');
 const { getPropertyById: getPropertyByIdQuery, updatePropertyStatus: updatePropertyStatusQuery } = require('../database/queries/properties');
 
 /* A function that returns a response object. */
@@ -283,5 +283,30 @@ exports.deleteProperties = (req, res) => {
 };
 
 exports.searchForProperty = (req, res) => {
+    const { type } = req.query;
+    if (!(type)) {
+        res.status(401).json({
+            status: 'error',
+            error: "All fields are required"
+        });
+    } else {
+        db.query(findCategoryByNameQuery, [
+                type
+            ], function(err, result) {
+                if (result.length > 0) {
 
+                } else {
+                    res.status(401).json({
+                        status: 'error',
+                        error: "Oops, there's no Property with this type"
+                    });
+                }
+            })
+            // res.json({
+            //     status: 'success',
+            //     data: {
+            //         type: type
+            //     }
+            // })
+    }
 }

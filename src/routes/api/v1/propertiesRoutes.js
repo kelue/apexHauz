@@ -11,6 +11,8 @@ module.exports = app => {
     /* This is a route that is used to get all the properties. */
     router.get("/properties", propertiesController.getAllProperties);
 
+    router.get("/properties/search", propertiesController.searchForProperty);
+
     /* This is a route that is used to create a new property. */
     router.post("/properties", hasAuth, upload.single('image'), propertiesController.createProperties);
 
