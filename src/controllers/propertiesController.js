@@ -1,15 +1,28 @@
+/* The below code is requiring the properties.js file. */
 const Properties = require('../models/properties.js');
+
+/* Importing the cloudinary module from the utils folder. */
 const Cloudinary = require('../utils/cloudinary');
+
+/* Importing the createProperties and validateIdAsNumeric functions from the validator.js file. */
 const { createProperties, validateIdAsNumeric } = require('../utils/validator');
 
 
 /* Importing the database connection. */
 const db = require("../config/db.config");
-const { findUserById: findUserByIdQuery } = require('../database/queries/users');
+
+/* Importing the findUserByIdQuery function from the users.js file in the database/queries folder. */
+const {
+    findUserById: findUserByIdQuery
+} = require('../database/queries/users');
+
+/* Importing the functions from the categories.js file. */
 const {
     findCategoryById: findCategoryByIdQuery,
     findCategoryByName: findCategoryByNameQuery
 } = require('../database/queries/categories');
+
+/* Importing the functions from the properties.js file. */
 const {
     getPropertyById: getPropertyByIdQuery,
     getPropertyByCategoryName: getPropertyByCategoryNameQuery
@@ -37,6 +50,7 @@ exports.getPropertiesById = (req, res) => {
     /* A function that returns a property by its id. */
     Properties.getById(Number(req.params.id), (err, data) => {
         if (err) {
+            /* *|CURSOR_MARCADOR|* */
             if (err.kind === "not_found") {
                 res.status(404).send({
                     message: `Not found Properties with id ${req.params.id}.`
@@ -108,6 +122,7 @@ exports.createProperties = async(req, res) => {
                                         /* Creating a new property. */
                                         Properties.createProperties(properties, (err, data) => {
                                             if (err) {
+                                                /* Sending a response to the client. */
                                                 res.status(500).json({
                                                     status: 'error',
                                                     error: err.message || "Some error occurred while creating the Property."
@@ -135,17 +150,20 @@ exports.createProperties = async(req, res) => {
                                         });
                                     }
                                 });
-                            } catch (err) {
+                            } /* Trying to catch an error. */
+                            catch (err) {
                                 console.log(err);
                             }
-                        } else {
+                        } /* Checking if the category exists in the database. */
+                        else {
                             res.status(401).json({
                                 status: 'error',
                                 error: "Category Does Not Exist",
                             });
                         }
                     });
-                } else {
+                } /* Checking if the user exists in the database. */
+                else {
                     res.status(401).json({
                         status: 'error',
                         error: "User Does Not Exist",
@@ -157,16 +175,23 @@ exports.createProperties = async(req, res) => {
 };
 
 exports.updatePropertyAsSold = (req, res) => {
+    /* Destructuring the id from the req.params object. */
     const { id } = req.params;
+
+    /* Checking if the id is not empty. */
     if (!(id)) {
         res.status(401).json({
             status: 'error',
             error: "All fields are required"
         });
     } else {
+        /* Declaring a variable called status and assigning it the value of 'sold'. */
         const status = 'sold';
+
+        /* Using the validateIdAsNumeric function to validate the id. */
         const { errors, valid } = validateIdAsNumeric(id);
 
+        /* Checking if the user is valid. */
         if (!valid) {
             return Response.send(
                 res.status(401),
@@ -294,7 +319,7 @@ exports.searchForProperty = (req, res) => {
     if (!(type)) {
         res.status(401).json({
             status: 'error',
-            error: "All fields are required"
+            error: "Oops a Type Query is Required"
         });
     } else {
         db.query(findCategoryByNameQuery, [
