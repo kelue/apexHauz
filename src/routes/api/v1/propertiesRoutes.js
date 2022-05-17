@@ -4,7 +4,6 @@ const { hasAuth } = require('../../../middleware/hasAuth');
 /* Importing the userController.js file. */
 const propertiesController = require('../../../controllers/propertiesController');
 
-
 const { upload } = require("../../../utils/multer");
 
 /* Exporting the routes to the server.js file. */
