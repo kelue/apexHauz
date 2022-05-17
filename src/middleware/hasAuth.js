@@ -21,7 +21,6 @@ exports.hasAuth = (req, res, next) => {
             error: "Oops an AUthorization Token is Required",
         });
     } else {
-
         /* Checking if the user is authenticated. */
         try {
             /* Verifying the token and returning the decoded token. */

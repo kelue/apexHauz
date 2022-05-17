@@ -6,8 +6,14 @@ const { createProperties, validateIdAsNumeric } = require('../utils/validator');
 /* Importing the database connection. */
 const db = require("../config/db.config");
 const { findUserById: findUserByIdQuery } = require('../database/queries/users');
-const { findCategoryById: findCategoryByIdQuery, findCategoryByName: findCategoryByNameQuery } = require('../database/queries/categories');
-const { getPropertyById: getPropertyByIdQuery, updatePropertyStatus: updatePropertyStatusQuery, getPropertyByCategoryName: getPropertyByCategoryNameQuery } = require('../database/queries/properties');
+const {
+    findCategoryById: findCategoryByIdQuery,
+    findCategoryByName: findCategoryByNameQuery
+} = require('../database/queries/categories');
+const {
+    getPropertyById: getPropertyByIdQuery,
+    getPropertyByCategoryName: getPropertyByCategoryNameQuery
+} = require('../database/queries/properties');
 
 /* A function that returns a response object. */
 const Response = require("../utils/responseHandler.js");
@@ -48,10 +54,10 @@ exports.getPropertiesById = (req, res) => {
 /* A function that creates a property. */
 exports.createProperties = async(req, res) => {
     /* Destructuring the request body. */
-    const { user_id, category_id, price, state, city, address, description, image, status } = req.body;
+    const { user_id, category_name, price, state, city, address, description, image, status } = req.body;
 
     /* Checking if all the fields are filled. */
-    if (!(user_id && category_id && price && state && city && address && description && image && status)) {
+    if (!(user_id && category_name && price && state && city && address && description && image && status)) {
         res.status(401).json({
             status: 'error',
             error: "All fields are required"
@@ -74,11 +80,12 @@ exports.createProperties = async(req, res) => {
                 user_id
             ], function(err, result) {
                 if (result.length > 0) {
-                    db.query(findCategoryByIdQuery, [
-                        category_id
+                    db.query(findCategoryByNameQuery, [
+                        category_name
                     ], function(err, result) {
                         if (result.length > 0) {
                             try {
+                                const category_id = result[0].id;
                                 //upload.single(image);
                                 /* Uploading the image to cloudinary. */
                                 // fs.unlink(req.file.path);
@@ -316,5 +323,143 @@ exports.searchForProperty = (req, res) => {
                 });
             }
         })
+    }
+}
+
+exports.updatePropertyDetails = (req, res) => {
+    const { id } = req.params;
+    const { user_id, category_name, price, state, city, address, description, image, status } = req.body;
+    const { errors, valid } = validateIdAsNumeric(id);
+    if (!valid) {
+        return Response.send(
+            res.status(401),
+            'error',
+            errors
+        )
+    } else {
+        if (category_name) {
+            db.query(findCategoryByNameQuery, [
+                category_name
+            ], function(err, result) {
+                if (result.length > 0) {
+                    const category_id = result[0].id;
+                    db.query(getPropertyByIdQuery, [
+                        id
+                    ], function(err, result) {
+                        if (result.length > 0) {
+                            if (result[0].user_id == req.body.user_id) {
+                                const image_id = result[0].image_id;
+                                const image_url = result[0].image_url;
+                                if (image) {
+                                    Cloudinary.UploadImage(image, (err, data) => {
+                                        /* Checking if there is an error and returning an error message if there is an error. */
+                                        if (err)
+                                            res.status(500).json({
+                                                status: 'error',
+                                                error: err.message || "Some error occurred while uploading Image"
+                                            });
+
+                                        else {
+                                            /* Destructuring the data object. */
+                                            const { secure_url, public_id } = data;
+                                            /* Destructuring the data object. */
+                                            const image_url = secure_url;
+                                            const image_id = public_id;
+                                            const properties = {
+                                                user_id,
+                                                category_id,
+                                                price,
+                                                state,
+                                                city,
+                                                address,
+                                                description,
+                                                image_url,
+                                                image_id,
+                                                status,
+                                                id
+                                            };
+                                            Properties.updatePropertyDetails(properties, (err, data) => {
+                                                if (err) {
+                                                    console.log("error: ", err);
+                                                } else {
+                                                    res.status(201).json({
+                                                        status: 'success',
+                                                        data: {
+                                                            id: data.id,
+                                                            user_id: data.user_id,
+                                                            category_id: data.category_id,
+                                                            price: data.price,
+                                                            state: data.state,
+                                                            city: data.city,
+                                                            address: data.address,
+                                                            description: data.description,
+                                                            image_url: data.image_url,
+                                                            image_id: data.image_id,
+                                                            status: data.status
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                        }
+                                    });
+                                } else {
+
+                                    const properties = {
+                                        user_id,
+                                        category_id,
+                                        price,
+                                        state,
+                                        city,
+                                        address,
+                                        description,
+                                        image_url,
+                                        image_id,
+                                        status,
+                                        id
+                                    };
+                                    Properties.updatePropertyDetails(properties, (err, data) => {
+                                        if (err) {
+                                            console.log("error: ", err);
+                                        } else {
+                                            res.status(201).json({
+                                                status: 'success',
+                                                data: {
+                                                    id: data.id,
+                                                    user_id: data.user_id,
+                                                    category_id: data.category_id,
+                                                    price: data.price,
+                                                    state: data.state,
+                                                    city: data.city,
+                                                    address: data.address,
+                                                    description: data.description,
+                                                    image_url: data.image_url,
+                                                    image_id: data.image_id,
+                                                    status: data.status
+                                                }
+                                            });
+                                        }
+                                    })
+                                }
+                            } else {
+                                res.status(401).json({
+                                    status: 'error',
+                                    error: "Oops You Are Not Authorized To Update This Property",
+                                });
+                            }
+                        } else {
+                            res.status(404).json({
+                                status: 'error',
+                                error: "This Property Does Not Exist",
+                            });
+                        }
+                    });
+                } else {
+                    res.status(401).json({
+                        status: 'error',
+                        error: "Category Does Not Exist",
+                    });
+                }
+            })
+        }
     }
 }

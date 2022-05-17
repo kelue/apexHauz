@@ -9,19 +9,21 @@ const { upload } = require("../../../utils/multer");
 /* Exporting the routes to the server.js file. */
 module.exports = app => {
     /* This is a route that is used to get all the properties. */
-    router.get("/properties", propertiesController.getAllProperties);
+    router.get("/property", propertiesController.getAllProperties);
 
-    router.get("/properties/search", propertiesController.searchForProperty);
+    router.get("/property/search", propertiesController.searchForProperty);
 
     /* This is a route that is used to create a new property. */
-    router.post("/properties", hasAuth, upload.single('image'), propertiesController.createProperties);
+    router.post("/property", hasAuth, upload.single('image'), propertiesController.createProperties);
 
     /* This is a route that is used to get a property by its id. */
-    router.get("/properties/:id", hasAuth, propertiesController.getPropertiesById);
+    router.get("/property/:id", hasAuth, propertiesController.getPropertiesById);
 
-    router.patch("/properties/:id/sold", hasAuth, propertiesController.updatePropertyAsSold);
+    router.patch("/property/:id/sold", hasAuth, propertiesController.updatePropertyAsSold);
 
-    router.delete("/properties/:id", hasAuth, propertiesController.deleteProperties);
+    router.patch("/property/:id", hasAuth, upload.single('image'), propertiesController.updatePropertyDetails);
+
+    router.delete("/property/:id", hasAuth, propertiesController.deleteProperties);
 
     /* A middleware that is used to catch any errors that may occur in the application. */
     app.use('/api/v1', router);
