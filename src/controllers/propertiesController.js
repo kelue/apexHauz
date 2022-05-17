@@ -18,7 +18,6 @@ const {
 
 /* Importing the functions from the categories.js file. */
 const {
-    findCategoryById: findCategoryByIdQuery,
     findCategoryByName: findCategoryByNameQuery
 } = require('../database/queries/categories');
 
