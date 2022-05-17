@@ -281,3 +281,7 @@ exports.deleteProperties = (req, res) => {
         }
     }
 };
+
+exports.searchForProperty = (req, res) => {
+
+}
