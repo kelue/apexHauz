@@ -15,10 +15,15 @@ const updatePropertyStatus = `
 UPDATE properties SET status = ? WHERE id = ?
 `;
 
+const deleteProperty = `
+DELETE FROM properties WHERE id = ?
+`;
+
 
 module.exports = {
     getAllProperties,
     getPropertyById,
     createNewProperty,
-    updatePropertyStatus
+    updatePropertyStatus,
+    deleteProperty
 }
