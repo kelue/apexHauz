@@ -19,14 +19,8 @@ module.exports = app => {
     /* A route that is used to find all the users in the database. */
     router.get("/", userController.findAll);
 
-    // Retrieve a single User with id
-    // router.get("/:id", userController.findOne);
-
-    // // Update a User with id
-    // router.put("/:id", userController.update);
-
-    // // Delete a User with id
-    // router.delete("/:id", userController.delete);
+    /* This is a route that is used to reset the password of a user. */
+    router.post("/auth/reset-password", userController.resetPassword);
 
     /* Telling the server to use the router for the api/v1 route. */
     app.use('/api/v1', router);

@@ -2,7 +2,11 @@
 const User = require("../models/users.js")
 
 /* A library that helps you hash passwords. */
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+
+const sendEMail = require('../utils/sendmail');
+
+const randomToken = require('rand-token');
 
 /* Importing the signup function from the validator file. */
 const { signup, signin } = require('../utils/validator');
@@ -182,3 +186,39 @@ exports.loginUser = async(req, res) => {
         }
     }
 };
+
+exports.resetPassword = async(req, res) => {
+    const { email } = req.body;
+    if (!email) {
+
+    } else {
+        db.query(findUserByEmailQuery, [
+            email
+        ], function(err, result) {
+            if (result.length > 0) {
+                const token = randomToken.generate(200);
+                const details = { email, token }
+                sendEMail.mailFunction(details, (err, data) => {
+                    if (err) {
+                        res.status(500).json({
+                            status: 'error',
+                            error: err || "Some error occurred while sending the email."
+                        });
+                    } else {
+                        res.status(200).json({
+                            status: 'success',
+                            data: {
+                                message: "Reset Password Email Sent to " + email
+                            }
+                        });
+                    }
+                });
+            } else {
+                res.status(404).json({
+                    status: 'error',
+                    error: "Email address Does Not Exist",
+                });
+            }
+        });
+    }
+}
