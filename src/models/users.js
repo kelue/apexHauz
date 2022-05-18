@@ -2,7 +2,10 @@
 const db = require("../config/db.config");
 
 /* It's importing the createNewUser function from the queries.js file. */
-const { createNewUser: createNewUserQuery } = require('../database/queries/users');
+const {
+    createNewUser: createNewUserQuery,
+    updateUserPassword: updateUserPasswordQuery
+} = require('../database/queries/users');
 
 const {
     createResetToken: createResetTokenQuery,
@@ -114,6 +117,20 @@ class User {
     static updateResetToken(details, result) {
         db.query(updateResetTokenQuery, [
             details.token,
+            details.user_id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+            }
+            result(null, res);
+        })
+    }
+
+    static updateUserPassword(details, result) {
+        db.query(updateUserPasswordQuery, [
+            details.password,
             details.user_id
         ], (err, res) => {
             if (err) {

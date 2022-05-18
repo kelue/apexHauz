@@ -24,7 +24,9 @@ const { generate: generateToken } = require('../utils/token');
 const { findUserByEmail: findUserByEmailQuery } = require('../database/queries/users');
 
 const {
-    findResetTokenRowByUserId: findResetTokenRowByUserIdQuery
+    findResetTokenRowByUserId: findResetTokenRowByUserIdQuery,
+    findResetToken: findResetTokenQuery,
+    deleteResetToken: deleteResetTokenQuery
 } = require('../database/queries/passwordResets');
 
 
@@ -191,7 +193,7 @@ exports.loginUser = async(req, res) => {
     }
 };
 
-exports.resetPassword = async(req, res) => {
+exports.forgotPassword = async(req, res) => {
     const { email } = req.body;
     if (!email) {
 
@@ -265,5 +267,58 @@ exports.resetPassword = async(req, res) => {
                 });
             }
         });
+    }
+}
+
+exports.resetPassword = async(req, res) => {
+    const { token, new_password } = req.body;
+    if (!(token && new_password)) {
+        res.status(401).json({
+            status: 'error',
+            error: "Reset Token and New Password are Required"
+        });
+    } else {
+        db.query(findResetTokenQuery, [
+            token
+        ], function(err, result) {
+            if (result.length > 0) {
+                const user_id = result[0].user_id;
+                /* Generating a salt for the password. */
+                const salt = bcrypt.genSaltSync(10);
+                /* Hashing the password. */
+                const password = bcrypt.hashSync(new_password.trim(), salt);
+                const details = { user_id, password };
+                User.updateUserPassword(details, (err, data) => {
+                    if (err) {
+                        res.status(500).send({
+                            message: err.message || "Some error occurred while updating the password."
+                        });
+                    } else {
+                        db.query(deleteResetTokenQuery, [
+                            token
+                        ], function(err, result) {
+                            if (!err) {
+                                res.status(200).json({
+                                    status: 'success',
+                                    data: {
+                                        message: "Password Updated Successfully"
+                                    }
+                                });
+                            } else {
+                                res.status(500).json({
+                                    status: 'error',
+                                    error: "Oops an Error Occured on our servers. Try Reseting Your password again."
+                                });
+                            }
+                        })
+                    }
+                });
+            } else {
+                res.status(401).json({
+                    status: 'error',
+                    error: "Reset Token is Invalid. Try Reseting Your Password"
+                });
+            }
+        })
     }
 }

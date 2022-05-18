@@ -10,8 +10,18 @@ const findResetTokenRowByUserId = `
 SELECT * FROM password_resets WHERE user_id = ?
 `;
 
+const findResetToken = `
+SELECT * FROM password_resets WHERE token = ?
+`;
+
+const deleteResetToken = `
+DELETE FROM password_resets WHERE token = ?
+`;
+
 module.exports = {
     createResetToken,
     updateResetToken,
-    findResetTokenRowByUserId
+    findResetTokenRowByUserId,
+    findResetToken,
+    deleteResetToken
 }
