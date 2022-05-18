@@ -11,7 +11,7 @@ Check Issues section to see todos and features to work on and indicate that you 
 
 ### You can work on as many issues/features as you want, Pull requests will be merged on a rolling basis of first commit, first review. Thank you!!
 
-# CapStone Project Overview
+## CapStone Project Overview
 
 ### ApexHauz is a platform where people can create and/or search properties for sale or rent
 
@@ -40,3 +40,11 @@ Check Issues section to see todos and features to work on and indicate that you 
     MySQL
     JWT => Token management
     bcryptjs => Password hash
+
+### Additional API Endpoints
+    
+    /api/v1/forgot-password
+
+    Required Params {
+        email
+    }
