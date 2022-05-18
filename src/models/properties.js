@@ -14,6 +14,10 @@ const {
     addExtraPropertyImages: addExtraPropertyImagesQuery
 } = require("../database/queries/images");
 
+const {
+    createNewReport: createNewReportQuery
+} = require('../database/queries/reports');
+
 class Properties {
     /**
      * The constructor function is a special method for creating and initializing an object created
@@ -195,6 +199,29 @@ class Properties {
                 return;
             } else {
                 return result(null, res);
+            }
+        })
+    }
+
+    static reportProperty(details, result) {
+        db.query(createNewReportQuery, [
+            details.user_id,
+            details.property_id,
+            details.reason,
+            details.description
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                const info = {
+                    id: res.insertId,
+                    user_id: details.user_id,
+                    property_id: details.property_id,
+                    reason: details.reason,
+                    description: details.description
+                }
+                return result(null, info);
             }
         })
     }
