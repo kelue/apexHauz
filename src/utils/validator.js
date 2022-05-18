@@ -112,11 +112,8 @@ const validateIdAsNumeric = (id) => {
     }
 }
 
-const validateReportProperty = (user_id, reason, description) => {
+const validateReportProperty = (reason, description) => {
     const errors = {};
-    if (validator.isEmpty(user_id)) {
-        errors["user_id"] = "User ID is Required";
-    }
     if (validator.isEmpty(reason)) {
         errors["reason"] = "Reason is Required";
     }

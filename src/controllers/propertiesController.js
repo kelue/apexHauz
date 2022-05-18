@@ -639,50 +639,56 @@ exports.addExtraPropertyImages = (req, res) => {
 exports.reportProperty = (req, res) => {
     const { id } = req.params;
     const { user_id, reason, description } = req.body;
-    const { errors, valid } = validateIdAsNumeric(id);
-    if (!valid) {
-        return Response.send(
-            res.status(401),
-            'error',
-            errors
-        )
+    if (!(reason && description)) {
+        res.status(404).json({
+            status: 'error',
+            error: "Oops reason and description for this report is Required",
+        });
     } else {
-        db.query(getPropertyByIdQuery, [
-            id
-        ], function(err, result) {
-            if (result.length > 0) {
-                const { errors, valid } = validateReportProperty(user_id, reason, description);
-                if (!valid) {
-                    return Response.send(
-                        res.status(401),
-                        'error',
-                        errors
-                    )
+        const { errors, valid } = validateIdAsNumeric(id);
+        if (!valid) {
+            return Response.send(
+                res.status(401),
+                'error',
+                errors
+            )
+        } else {
+            db.query(getPropertyByIdQuery, [
+                id
+            ], function(err, result) {
+                if (result.length > 0) {
+                    const { errors, valid } = validateReportProperty(reason, description);
+                    if (!valid) {
+                        return Response.send(
+                            res.status(401),
+                            'error',
+                            errors
+                        )
+                    } else {
+                        const details = {
+                            user_id,
+                            property_id: id,
+                            reason,
+                            description
+                        };
+                        Properties.reportProperty(details, (err, data) => {
+                            if (err) {
+                                console.log("error: ", err);
+                            } else {
+                                res.status(201).json({
+                                    status: 'success',
+                                    data: data
+                                });
+                            }
+                        })
+                    }
                 } else {
-                    const details = {
-                        user_id,
-                        property_id: id,
-                        reason,
-                        description
-                    };
-                    Properties.reportProperty(details, (err, data) => {
-                        if (err) {
-                            console.log("error: ", err);
-                        } else {
-                            res.status(201).json({
-                                status: 'success',
-                                data: data
-                            });
-                        }
-                    })
+                    res.status(404).json({
+                        status: 'error',
+                        error: "This Property Does Not Exist",
+                    });
                 }
-            } else {
-                res.status(404).json({
-                    status: 'error',
-                    error: "This Property Does Not Exist",
-                });
-            }
-        })
+            })
+        }
     }
-
 }
