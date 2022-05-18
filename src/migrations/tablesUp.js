@@ -3,10 +3,13 @@ const {
     createTableCategories: createTableCategoriessQuery,
     createTableProperties: createTablePropertiesQuery,
     createTableImages: createTableImagesQuery,
+    createTableReports: createTableReportsQuery,
     createPasswordResetsTable: createPasswordResetsTableQuery,
     createPropertiesUserForeignKeys: createPropertiesUserForeignKeysQuery,
     createPropertiesCategoriesForeignKeys: createPropertiesCategoriesForeignKeysQuery,
     createImagesPropertyForeignKeys: createImagesPropertyForeignKeysQuery,
+    createReportsUsersForeignKeys: createReportsUsersForeignKeysQuery,
+    createReportsPropertiesForeignKeys: createReportsPropertiesForeignKeysQuery,
     createPasswordResetsUserForeignKeys: createPasswordResetsUserForeignKeysQuery
 } = require('../database/queries/tables_queries');
 db = require('../config/db.config');
@@ -40,6 +43,13 @@ db = require('../config/db.config');
         }
         console.log('Images Table Created Successfully');
     });
+    db.query(createTableReportsQuery, (err, _) => {
+        if (err) {
+            console.log("error: ", err);
+            return;
+        }
+        console.log('Reports Table Created Successfully');
+    });
     db.query(createPasswordResetsTableQuery, (err, _) => {
         if (err) {
             console.log("error: ", err);
@@ -67,6 +77,21 @@ db = require('../config/db.config');
             return;
         }
         console.log('Images & Properties Foreign Keys Created Successfully');
+    });
+    db.query(createReportsUsersForeignKeysQuery, (err, _) => {
+        if (err) {
+            console.log("error: ", err);
+            return;
+        }
+        console.log('Reports & Users Foreign Keys Created Successfully');
+    });
+    /* Creating a foreign key between the reports and properties tables. */
+    db.query(createReportsPropertiesForeignKeysQuery, (err, _) => {
+        if (err) {
+            console.log("error: ", err);
+            return;
+        }
+        console.log('Reports & Properties Foreign Keys Created Successfully');
     });
     db.query(createPasswordResetsUserForeignKeysQuery, (err, _) => {
         if (err) {

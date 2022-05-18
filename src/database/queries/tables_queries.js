@@ -57,6 +57,17 @@ CREATE TABLE IF NOT EXISTS images (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )`;
 
+const createTableReports = `
+CREATE TABLE IF NOT EXISTS reports (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    property_id INT NOT NULL,
+    reason VARCHAR(255) DEFAULT NULL,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)`;
+
 
 const createPasswordResetsTable = `
 CREATE TABLE IF NOT EXISTS password_resets (
@@ -80,8 +91,16 @@ const createImagesPropertyForeignKeys = `
 ALTER TABLE images ADD CONSTRAINT images_property_id_properties_id FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE;
 `;
 
+const createReportsUsersForeignKeys = `
+ALTER TABLE reports ADD CONSTRAINT reports_user_id_users_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+`;
+
+const createReportsPropertiesForeignKeys = `
+ALTER TABLE reports ADD CONSTRAINT reports_property_id_properties_id FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE;
+`;
+
 const createPasswordResetsUserForeignKeys = `
-ALTER TABLE password_resets ADD CONSTRAINT password_resets_user_id_users_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE password_resets ADD CONSTRAINT password_resets_user_id_users_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE;
 `;
 
 module.exports = {
@@ -91,9 +110,12 @@ module.exports = {
     createTableCategories,
     createTableProperties,
     createTableImages,
+    createTableReports,
     createPasswordResetsTable,
     createPropertiesUserForeignKeys,
     createPropertiesCategoriesForeignKeys,
     createImagesPropertyForeignKeys,
+    createReportsUsersForeignKeys,
+    createReportsPropertiesForeignKeys,
     createPasswordResetsUserForeignKeys
 }
