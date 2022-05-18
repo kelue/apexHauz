@@ -112,9 +112,27 @@ const validateIdAsNumeric = (id) => {
     }
 }
 
+const validateReportProperty = (user_id, reason, description) => {
+    const errors = {};
+    if (validator.isEmpty(user_id)) {
+        errors["user_id"] = "User ID is Required";
+    }
+    if (validator.isEmpty(reason)) {
+        errors["reason"] = "Reason is Required";
+    }
+    if (validator.isEmpty(description)) {
+        errors["description"] = "Description is Required";
+    }
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    }
+}
+
 module.exports = {
     signup,
     signin,
     createProperties,
-    validateIdAsNumeric
+    validateIdAsNumeric,
+    validateReportProperty
 }

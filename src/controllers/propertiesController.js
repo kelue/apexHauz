@@ -5,27 +5,35 @@ const Properties = require('../models/properties.js');
 const Cloudinary = require('../utils/cloudinary');
 
 /* Importing the createProperties and validateIdAsNumeric functions from the validator.js file. */
-const { createProperties, validateIdAsNumeric } = require('../utils/validator');
+const {
+    createProperties,
+    validateIdAsNumeric,
+    validateReportProperty
+} = require('../utils/validator');
 
 
 /* Importing the database connection. */
 const db = require("../config/db.config");
+
 
 /* Importing the findUserByIdQuery function from the users.js file in the database/queries folder. */
 const {
     findUserById: findUserByIdQuery
 } = require('../database/queries/users');
 
+
 /* Importing the functions from the categories.js file. */
 const {
     findCategoryByName: findCategoryByNameQuery
 } = require('../database/queries/categories');
+
 
 /* Importing the functions from the properties.js file. */
 const {
     getPropertyById: getPropertyByIdQuery,
     getPropertyByCategoryName: getPropertyByCategoryNameQuery
 } = require('../database/queries/properties');
+
 
 /* Importing the getExtraPropertyImagesQuery function from the images.js file in the database/queries
 folder. */
@@ -630,6 +638,7 @@ exports.addExtraPropertyImages = (req, res) => {
 
 exports.reportProperty = (req, res) => {
     const { id } = req.params;
+    const { user_id, reason, description } = req.body;
     const { errors, valid } = validateIdAsNumeric(id);
     if (!valid) {
         return Response.send(
@@ -638,7 +647,42 @@ exports.reportProperty = (req, res) => {
             errors
         )
     } else {
-
+        db.query(getPropertyByIdQuery, [
+            id
+        ], function(err, result) {
+            if (result.length > 0) {
+                const { errors, valid } = validateReportProperty(user_id, reason, description);
+                if (!valid) {
+                    return Response.send(
+                        res.status(401),
+                        'error',
+                        errors
+                    )
+                } else {
+                    const details = {
+                        user_id,
+                        property_id: id,
+                        reason,
+                        description
+                    };
+                    Properties.reportProperty(details, (err, data) => {
+                        if (err) {
+                            console.log("error: ", err);
+                        } else {
+                            res.status(201).json({
+                                status: 'success',
+                                data: data
+                            });
+                        }
+                    })
+                }
+            } else {
+                res.status(404).json({
+                    status: 'error',
+                    error: "This Property Does Not Exist",
+                });
+            }
+        })
     }
 
 }
