@@ -22,7 +22,7 @@ const upload = multer({
     },
     fileFilter(req, file, cb) {
         // checks if the uploaded file is a valid image
-        if (!file ? .mimetype.match(/(jpg|jpeg|png)$/)) {
+        if (!file?.mimetype.match(/(jpg|jpeg|png)$/)) {
             return cb(new Error('Please upload a valid image!'), false);
         }
         cb(null, true);

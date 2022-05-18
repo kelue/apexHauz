@@ -17,7 +17,7 @@ module.exports = app => {
     router.get("/property/:id/images", hasAuth, propertiesController.getExtraPropertyImages);
 
 
-    router.post("/property/:id/images/add", propertiesController.addExtraPropertyImages);
+    router.post("/property/:id/images/add", upload.single('image'), propertiesController.addExtraPropertyImages);
 
     /* This is a route that is used to get a property by its id. */
     router.get("/property/:id", hasAuth, propertiesController.getPropertiesById);

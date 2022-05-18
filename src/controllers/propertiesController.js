@@ -544,85 +544,85 @@ exports.addExtraPropertyImages = (req, res) => {
     const { id } = req.params;
     const images = req.files;
     console.log(images);
-    // if (!(images)) {
-    //     res.status(401).json({
-    //         status: 'error',
-    //         error: "Oops images are required"
-    //     });
-    // } else {
-    //     const { errors, valid } = validateIdAsNumeric(id);
-    //     if (!valid) {
-    //         return Response.send(
-    //             res.status(401),
-    //             'error',
-    //             errors
-    //         )
-    //     } else {
-    //         db.query(getPropertyByIdQuery, [
-    //             id
-    //         ], function(err, result) {
-    //             if (result.length > 0) {
-    //                 if (req.files.length > 0) {
-    //                     // const images = req.files;
-    //                     const images_url = [];
-    //                     const images_id = [];
+    if (!(images)) {
+        res.status(401).json({
+            status: 'error',
+            error: "Oops images are required"
+        });
+    } else {
+        const { errors, valid } = validateIdAsNumeric(id);
+        if (!valid) {
+            return Response.send(
+                res.status(401),
+                'error',
+                errors
+            )
+        } else {
+            db.query(getPropertyByIdQuery, [
+                id
+            ], function(err, result) {
+                if (result.length > 0) {
+                    if (images) {
+                        // const images = req.files;
+                        const images_url = [];
+                        const images_id = [];
 
-    //                     for (let i = 0; i < images.length; i++) {
-    //                         const image = images[i];
-    //                         Cloudinary.UploadImage(image, (err, data) => {
-    //                             /* Checking if there is an error and returning an error message if there is an error. */
-    //                             if (err)
-    //                                 res.status(500).json({
-    //                                     status: 'error',
-    //                                     error: err.message || "Some error occurred while uploading Image"
-    //                                 });
+                        for (let i = 0; i < images.length; i++) {
+                            const image = images[i];
+                            Cloudinary.UploadImage(image, (err, data) => {
+                                /* Checking if there is an error and returning an error message if there is an error. */
+                                if (err)
+                                    res.status(500).json({
+                                        status: 'error',
+                                        error: err.message || "Some error occurred while uploading Image"
+                                    });
 
-    //                             else {
-    //                                 /* Destructuring the data object. */
-    //                                 const { secure_url, public_id } = data;
-    //                                 /* Destructuring the data object. */
-    //                                 const image_url = secure_url;
-    //                                 const image_id = public_id;
-    //                                 images_url.push(image_url);
-    //                                 images_id.push(image_id);
-    //                                 if (i == images.length - 1) {
-    //                                     const extra_images = {
-    //                                         user_id: req.body.user_id,
-    //                                         property_id: id,
-    //                                         images_url,
-    //                                         images_id
-    //                                     };
-    //                                     Properties.addExtraPropertyImages(extra_images, (err, data) => {
-    //                                         if (err) {
-    //                                             console.log("error: ", err);
-    //                                         } else {
-    //                                             res.status(201).json({
-    //                                                 status: 'success',
-    //                                                 data: data
-    //                                             });
-    //                                         }
-    //                                     })
-    //                                 } else {
-    //                                     return;
-    //                                 }
-    //                             }
-    //                         });
-    //                     }
-    //                 } else {
-    //                     res.status(401).json({
-    //                         status: 'error',
-    //                         error: "Oops, there's no images to add",
-    //                     });
-    //                 }
+                                else {
+                                    /* Destructuring the data object. */
+                                    const { secure_url, public_id } = data;
+                                    /* Destructuring the data object. */
+                                    const image_url = secure_url;
+                                    const image_id = public_id;
+                                    images_url.push(image_url);
+                                    images_id.push(image_id);
+                                    if (i == images.length - 1) {
+                                        const extra_images = {
+                                            user_id: req.body.user_id,
+                                            property_id: id,
+                                            images_url,
+                                            images_id
+                                        };
+                                        Properties.addExtraPropertyImages(extra_images, (err, data) => {
+                                            if (err) {
+                                                console.log("error: ", err);
+                                            } else {
+                                                res.status(201).json({
+                                                    status: 'success',
+                                                    data: data
+                                                });
+                                            }
+                                        })
+                                    } else {
+                                        return;
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        res.status(401).json({
+                            status: 'error',
+                            error: "Oops, there's no images to add",
+                        });
+                    }
 
-    //             } else {
-    //                 res.status(404).json({
-    //                     status: 'error',
-    //                     error: "This Property Does Not Exist",
-    //                 });
-    //             }
+                } else {
+                    res.status(404).json({
+                        status: 'error',
+                        error: "This Property Does Not Exist",
+                    });
+                }
 
-    //         })
-    //     }
-    // }
+            })
+        }
+    }
 }
