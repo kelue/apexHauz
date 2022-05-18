@@ -6,12 +6,12 @@ const updateResetToken = `
 UPDATE password_resets SET token = ?, updated_at = NOW() WHERE user_id = ?
 `;
 
-const findRowByUserId = `
+const findResetTokenRowByUserId = `
 SELECT * FROM password_resets WHERE user_id = ?
 `;
 
 module.exports = {
     createResetToken,
     updateResetToken,
-    findRowByUserId
+    findResetTokenRowByUserId
 }

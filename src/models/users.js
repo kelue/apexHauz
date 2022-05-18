@@ -97,7 +97,7 @@ class User {
         })
     }
 
-    static resetPassword(details, result) {
+    static createResetToken(details, result) {
         db.query(createResetTokenQuery, [
             details.user_id,
             details.token
@@ -111,7 +111,7 @@ class User {
         })
     }
 
-    static updateResetPassword(details, result) {
+    static updateResetToken(details, result) {
         db.query(updateResetTokenQuery, [
             details.token,
             details.user_id

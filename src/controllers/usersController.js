@@ -24,7 +24,7 @@ const { generate: generateToken } = require('../utils/token');
 const { findUserByEmail: findUserByEmailQuery } = require('../database/queries/users');
 
 const {
-
+    findResetTokenRowByUserId: findResetTokenRowByUserIdQuery
 } = require('../database/queries/passwordResets');
 
 
@@ -201,21 +201,61 @@ exports.resetPassword = async(req, res) => {
         ], function(err, result) {
             if (result.length > 0) {
                 const token = randomToken.generate(200);
-                const details = { email, token };
                 const user_id = result[0].id;
-                sendEMail.mailFunction(details, (err, data) => {
-                    if (err) {
-                        res.status(500).json({
-                            status: 'error',
-                            error: err || "Some error occurred while sending the email."
-                        });
-                    } else {
-                        res.status(200).json({
-                            status: 'success',
-                            data: {
-                                message: "Reset Password Email Sent to " + email
+                const details = { email, token, user_id };
+
+                db.query(findResetTokenRowByUserIdQuery, [
+                    user_id
+                ], function(err, result) {
+                    if (result.length > 0) {
+
+                        User.updateResetToken(details, (err, data) => {
+                            if (err) {
+                                res.status(500).send({
+                                    message: err.message || "Some error occurred while creating the Reset Token."
+                                });
+                            } else {
+                                sendEMail.mailFunction(details, (err, data) => {
+                                    if (err) {
+                                        res.status(500).json({
+                                            status: 'error',
+                                            error: err || "Some error occurred while sending the email."
+                                        });
+                                    } else {
+                                        res.status(200).json({
+                                            status: 'success',
+                                            data: {
+                                                message: "Reset Password Email Sent to " + email
+                                            }
+                                        });
+                                    }
+                                });
                             }
-                        });
+                        })
+                    } else {
+                        User.createResetToken(details, (err, data) => {
+                            if (err) {
+                                res.status(500).send({
+                                    message: err.message || "Some error occurred while creating the Reset Token."
+                                });
+                            } else {
+                                sendEMail.mailFunction(details, (err, data) => {
+                                    if (err) {
+                                        res.status(500).json({
+                                            status: 'error',
+                                            error: err || "Some error occurred while sending the email."
+                                        });
+                                    } else {
+                                        res.status(200).json({
+                                            status: 'success',
+                                            data: {
+                                                message: "Reset Password Email Sent to " + email
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        })
                     }
                 });
             } else {
