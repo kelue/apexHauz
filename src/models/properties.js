@@ -1,5 +1,5 @@
 /* Importing the database connection from the db.config.js file. */
-const db = require("../config/db.config");
+const { connection: db } = require("../config/db.config");
 const {
     getAllProperties: getAllPropertiesQuery,
     getPropertyById: getPropertyByIdQuery,
