@@ -32,9 +32,9 @@ Fill your database credentials appropriately and save the file.
 
     .env example
     DB_HOST=localhost
-    DB_USERNAME=ahmadinjo
-    DB_PASSWORD=MyVery@Password1
-    DATABASE=sidehustlerestapi
+    DB_USERNAME=username
+    DB_PASSWORD=database_password
+    DATABASE=database_name
 
 ## Create Table Migrations
 
