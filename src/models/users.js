@@ -2,7 +2,15 @@
 const { connection: db } = require("../config/db.config");
 
 /* It's importing the createNewUser function from the queries.js file. */
-const { createNewUser: createNewUserQuery } = require('../database/queries/users');
+const {
+    createNewUser: createNewUserQuery,
+    updateUserPassword: updateUserPasswordQuery
+} = require('../database/queries/users');
+
+const {
+    createResetToken: createResetTokenQuery,
+    updateResetToken: updateResetTokenQuery
+} = require('../database/queries/passwordResets');
 
 
 /* It's a class that handles all the database queries for the users table. */
@@ -89,6 +97,48 @@ class User {
             }
             callback(null, result[0]);
             return;
+        })
+    }
+
+    static createResetToken(details, result) {
+        db.query(createResetTokenQuery, [
+            details.user_id,
+            details.token
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+            }
+            result(null, res);
+        })
+    }
+
+    static updateResetToken(details, result) {
+        db.query(updateResetTokenQuery, [
+            details.token,
+            details.user_id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+            }
+            result(null, res);
+        })
+    }
+
+    static updateUserPassword(details, result) {
+        db.query(updateUserPasswordQuery, [
+            details.password,
+            details.user_id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                result(err, null);
+                return;
+            }
+            result(null, res);
         })
     }
 }

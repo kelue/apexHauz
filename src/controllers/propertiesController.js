@@ -90,11 +90,11 @@ exports.createProperties = async (req, res) => {
             /* Uploading the image to cloudinary. */
             db.query(findUserByIdQuery, [
                 user_id
-            ], function (err, result) {
+            ], function(err, result) {
                 if (result.length > 0) {
                     db.query(findCategoryByNameQuery, [
                         category_name
-                    ], function (err, result) {
+                    ], function(err, result) {
                         if (result.length > 0) {
                             try {
                                 const category_id = result[0].id;
@@ -199,7 +199,7 @@ exports.updatePropertyAsSold = (req, res) => {
         } else {
             db.query(getPropertyByIdQuery, [
                 id
-            ], function (err, result) {
+            ], function(err, result) {
                 if (result.length > 0) {
                     if (result[0].user_id == req.body.user_id) {
                         Properties.updatePropertyStatus(id, status, (err, data) => {
