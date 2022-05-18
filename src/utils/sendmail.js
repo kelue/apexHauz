@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const randomToken = require('rand-token');
 const Response = require('../utils/responseHandler');
+require('dotenv').config();
 
 class sendEMail {
     /**
@@ -17,16 +18,16 @@ class sendEMail {
     static mailFunction = (details, result) => {
         const mail = nodemailer.createTransport({
             service: 'smtp',
-            host: "mail.hangoutpadie.com",
-            port: 465,
-            secure: true, // tru
+            host: process.env.MAIL_HOST,
+            port: process.env.MAIL_PORT,
+            secure: process.env.MAIL_SECURE,
             auth: {
-                user: 'no-reply@hangoutpadie.com', // Your email id
-                pass: '7kQG.%l8Au_*' // Your password
+                user: process.env.MAIL_USERNAME, // Your email id
+                pass: process.env.MAIL_PASSWORD // Your password
             }
         });
         const mailOptions = {
-            from: 'no-reply@hangoutpadie.com',
+            from: process.env.MAIL_FROM_ADDRESS, // sender address
             to: details.email,
             subject: 'Reset Password Link - apexHauz',
             html: '<p>You requested for reset password, kindly use this <a href="http://localhost:4000/reset-password?token=' + details.token + '">link</a> to reset your password</p>'
