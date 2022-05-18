@@ -27,6 +27,10 @@ const updatePropertyDetails = `
 UPDATE properties SET category_id = ?, price = ?, state = ?, city = ?, address = ?, description = ?, status = ?, image_url = ?, image_id = ?, updated_at = NOW() WHERE id = ?
 `;
 
+const getExtraPropertyImages = `
+SELECT * FROM images WHERE property_id = ?
+`;
+
 
 module.exports = {
     getAllProperties,
@@ -35,5 +39,6 @@ module.exports = {
     updatePropertyStatus,
     deleteProperty,
     getPropertyByCategoryName,
-    updatePropertyDetails
+    updatePropertyDetails,
+    getExtraPropertyImages
 }
