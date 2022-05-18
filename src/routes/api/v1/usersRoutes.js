@@ -22,6 +22,9 @@ module.exports = app => {
     /* This is a route that is used to reset the password of a user. */
     router.post("/auth/reset-password", userController.resetPassword);
 
+    /* This is a route that is used to send a password reset link to the user's email address. */
+    router.post("/auth/forgot-password", userController.forgotPassword);
+
     /* Telling the server to use the router for the api/v1 route. */
     app.use('/api/v1', router);
 
