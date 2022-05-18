@@ -23,6 +23,10 @@ const { generate: generateToken } = require('../utils/token');
 /* Importing the findUserByEmail function from the queries.js file. */
 const { findUserByEmail: findUserByEmailQuery } = require('../database/queries/users');
 
+const {
+
+} = require('../database/queries/passwordResets');
+
 
 /* A function that returns all users in the database. */
 exports.findAll = (req, res) => {
@@ -197,7 +201,8 @@ exports.resetPassword = async(req, res) => {
         ], function(err, result) {
             if (result.length > 0) {
                 const token = randomToken.generate(200);
-                const details = { email, token }
+                const details = { email, token };
+                const user_id = result[0].id;
                 sendEMail.mailFunction(details, (err, data) => {
                     if (err) {
                         res.status(500).json({
