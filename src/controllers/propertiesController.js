@@ -35,10 +35,10 @@ exports.getAllProperties = (req, res) => {
         /* A callback function that returns an error message if there is an error and returns the data
         if there is no error. */
         if (err)
-        /* Returning an error message if there is an error. */
+            /* Returning an error message if there is an error. */
             res.status(500).send({
-            message: err.message || "Some error occurred while retrieving properties."
-        });
+                message: err.message || "Some error occurred while retrieving properties."
+            });
         else res.send(data);
     });
 }
@@ -64,7 +64,7 @@ exports.getPropertiesById = (req, res) => {
 
 
 /* A function that creates a property. */
-exports.createProperties = async(req, res) => {
+exports.createProperties = async (req, res) => {
     /* Destructuring the request body. */
     const { user_id, category_name, price, state, city, address, description, image, status } = req.body;
 
@@ -269,7 +269,7 @@ exports.deleteProperties = (req, res) => {
         } else {
             db.query(getPropertyByIdQuery, [
                 id
-            ], function(err, result) {
+            ], function (err, result) {
                 if (result.length > 0) {
                     if (result[0].user_id == req.body.user_id) {
                         Properties.deleteProperty(id, (err, data) => {
@@ -322,11 +322,11 @@ exports.searchForProperty = (req, res) => {
     } else {
         db.query(findCategoryByNameQuery, [
             type
-        ], function(err, result) {
+        ], function (err, result) {
             if (result.length > 0) {
                 db.query(getPropertyByCategoryNameQuery, [
                     type
-                ], function(err, result) {
+                ], function (err, result) {
                     if (result.length > 0) {
                         res.status(201).json({
                             status: 'success',
@@ -363,12 +363,12 @@ exports.updatePropertyDetails = (req, res) => {
         if (category_name) {
             db.query(findCategoryByNameQuery, [
                 category_name
-            ], function(err, result) {
+            ], function (err, result) {
                 if (result.length > 0) {
                     const category_id = result[0].id;
                     db.query(getPropertyByIdQuery, [
                         id
-                    ], function(err, result) {
+                    ], function (err, result) {
                         if (result.length > 0) {
                             if (result[0].user_id == req.body.user_id) {
                                 const image_id = result[0].image_id;

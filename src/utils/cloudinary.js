@@ -35,21 +35,21 @@ class Cloudinary {
      * @param callback - The callback function that will be called when the upload is complete.
      */
     static UploadImage(image, callback) {
-            /* It's uploading the image to Cloudinary. */
-            cloudinary.uploader.upload(image, (error, result) => {
-                /* It's calling the callback function with the error or result. */
-                if (error) {
-                    callback(error, null);
-                } else {
-                    callback(null, result);
-                }
-            });
-        }
-        /**
-         * It deletes an image from Cloudinary
-         * @param public_id - The public ID of the image you want to delete.
-         * @param callback - A callback function that will be called when the upload is complete.
-         */
+        /* It's uploading the image to Cloudinary. */
+        cloudinary.uploader.upload(image, (error, result) => {
+            /* It's calling the callback function with the error or result. */
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, result);
+            }
+        });
+    }
+    /**
+     * It deletes an image from Cloudinary
+     * @param public_id - The public ID of the image you want to delete.
+     * @param callback - A callback function that will be called when the upload is complete.
+     */
     static DeleteImage(public_id, callback) {
         /* It's deleting an image from Cloudinary. */
         cloudinary.uploader.destroy(public_id, (error, result) => {
@@ -61,6 +61,32 @@ class Cloudinary {
             }
         });
     }
+
+    /** 
+     * 
+     * @author Ahmad Busari
+     * @param {Array} An array of the uploaded files object from multer (req.files).
+     * @returns {Array} An array of objects for each image containing the secure_url and public_id properties as url and id respectively.
+     * @description This method takes in an array of files from multer, maps them into another array of objects containing the url and id to the uploaded files which can the be saved into the database.
+     * 
+    */
+    static async UploadMultipleImages(images) {
+        try {
+            const links = images.map(async (image) => {
+                const uploadedImage = await cloudinary.uploader.upload(image.path);
+                fs.unlink(image.path);
+                const newImage = { url: uploadedImage.secure_url, id: uploadedImage.public_id };
+
+                return newImage;
+            });
+            return await Promise.all(links);
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+
 }
 
 
