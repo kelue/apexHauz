@@ -195,6 +195,7 @@ exports.loginUser = async(req, res) => {
 
 exports.forgotPassword = async(req, res) => {
     const { email } = req.body;
+    const serverUrl = req.protocol + '://' + req.get('host');
     if (!email) {
 
     } else {
@@ -204,7 +205,7 @@ exports.forgotPassword = async(req, res) => {
             if (result.length > 0) {
                 const token = randomToken.generate(200);
                 const user_id = result[0].id;
-                const details = { email, token, user_id };
+                const details = { email, token, user_id, serverUrl };
 
                 db.query(findResetTokenRowByUserIdQuery, [
                     user_id

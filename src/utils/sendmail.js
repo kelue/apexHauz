@@ -16,6 +16,10 @@ class sendEMail {
     }
 
     static mailFunction = (details, result) => {
+        const resetLink = details.serverUrl + '/api/v1/reset-password?token=' + details.token
+        const htmlMessage = '<p>You Recently requested for reset password, kindly use this <a href="' +
+            resetLink + '">link</a> to reset your password. <br> <hr> or Copy and paste the link below in your browser <br> ' +
+            resetLink + ' </p>';
         const mail = nodemailer.createTransport({
             service: 'smtp',
             host: process.env.MAIL_HOST,
@@ -29,8 +33,8 @@ class sendEMail {
         const mailOptions = {
             from: process.env.MAIL_FROM_ADDRESS, // sender address
             to: details.email,
-            subject: 'Reset Password Link - apexHauz',
-            html: '<p>You requested for reset password, kindly use this <a href="http://localhost:4000/reset-password?token=' + details.token + '">link</a> to reset your password</p>'
+            subject: 'Reset Password Link - ' + process.env.APP_NAME, // Subject line
+            html: htmlMessage
         };
         mail.sendMail(mailOptions, function(err, info) {
             if (err) {
