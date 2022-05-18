@@ -626,3 +626,19 @@ exports.addExtraPropertyImages = (req, res) => {
         }
     }
 }
+
+
+exports.reportProperty = (req, res) => {
+    const { id } = req.params;
+    const { errors, valid } = validateIdAsNumeric(id);
+    if (!valid) {
+        return Response.send(
+            res.status(401),
+            'error',
+            errors
+        )
+    } else {
+
+    }
+
+}

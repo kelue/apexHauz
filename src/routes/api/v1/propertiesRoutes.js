@@ -8,6 +8,7 @@ const { upload } = require("../../../utils/multer");
 
 /* Exporting the routes to the server.js file. */
 module.exports = app => {
+
     /* This is a route that is used to get all the properties. */
     router.get("/property", propertiesController.getAllProperties);
 
@@ -16,14 +17,23 @@ module.exports = app => {
 
     router.get("/property/:id/images", hasAuth, propertiesController.getExtraPropertyImages);
 
-
-    router.post("/property/:id/images/add", upload.single('image'), propertiesController.addExtraPropertyImages);
-
     /* This is a route that is used to get a property by its id. */
     router.get("/property/:id", hasAuth, propertiesController.getPropertiesById);
 
+
+
     /* This is a route that is used to create a new property. */
     router.post("/property", hasAuth, upload.single('image'), propertiesController.createProperties);
+
+
+    /* This is a route that is used to report a property. */
+    router.post("/property/:id/report", hasAuth, propertiesController.reportProperty);
+
+    /* This is a route that is used to add extra images to a property. */
+    router.post("/property/:id/images/add", upload.single('image'), propertiesController.addExtraPropertyImages);
+
+
+
 
     /* This is a route that is used to update a property as sold. */
     router.patch("/property/:id/sold", hasAuth, propertiesController.updatePropertyAsSold);
@@ -31,8 +41,13 @@ module.exports = app => {
     /* This is a route that is used to update a property as sold. */
     router.patch("/property/:id", hasAuth, upload.single('image'), propertiesController.updatePropertyDetails);
 
+
+
+
     /* This is a route that is used to delete a property by its id. */
     router.delete("/property/:id", hasAuth, propertiesController.deleteProperties);
+
+
 
     /* A middleware that is used to catch any errors that may occur in the application. */
     app.use('/api/v1', router);
