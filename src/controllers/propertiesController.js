@@ -7,7 +7,6 @@ const Cloudinary = require('../utils/cloudinary');
 /* Importing the createProperties and validateIdAsNumeric functions from the validator.js file. */
 const { createProperties, validateIdAsNumeric } = require('../utils/validator');
 
-
 /* Importing the database connection. */
 const db = require("../config/db.config");
 
@@ -427,7 +426,6 @@ exports.updatePropertyDetails = (req, res) => {
                                         }
                                     });
                                 } else {
-
                                     const properties = {
                                         user_id,
                                         category_id,
