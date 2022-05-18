@@ -359,137 +359,144 @@ exports.searchForProperty = (req, res) => {
 exports.updatePropertyDetails = (req, res) => {
     const { id } = req.params;
     const { user_id, category_name, price, state, city, address, description, image, status } = req.body;
-    const { errors, valid } = validateIdAsNumeric(id);
-    if (!valid) {
-        return Response.send(
-            res.status(401),
-            'error',
-            errors
-        )
+    if (!(user_id && category_name && price && state && city && address && description && image && status)) {
+        res.status(401).json({
+            status: 'error',
+            error: "All fields are required"
+        });
     } else {
-        if (category_name) {
-            db.query(findCategoryByNameQuery, [
-                category_name
-            ], function(err, result) {
-                if (result.length > 0) {
-                    const category_id = result[0].id;
-                    db.query(getPropertyByIdQuery, [
-                        id
-                    ], function(err, result) {
-                        if (result.length > 0) {
-                            if (result[0].user_id == req.body.user_id) {
-                                const image_id = result[0].image_id;
-                                const image_url = result[0].image_url;
-                                if (image) {
-                                    Cloudinary.UploadImage(image, (err, data) => {
-                                        /* Checking if there is an error and returning an error message if there is an error. */
-                                        if (err)
-                                            res.status(500).json({
-                                                status: 'error',
-                                                error: err.message || "Some error occurred while uploading Image"
-                                            });
+        const { errors, valid } = validateIdAsNumeric(id);
+        if (!valid) {
+            return Response.send(
+                res.status(401),
+                'error',
+                errors
+            )
+        } else {
+            if (category_name) {
+                db.query(findCategoryByNameQuery, [
+                    category_name
+                ], function(err, result) {
+                    if (result.length > 0) {
+                        const category_id = result[0].id;
+                        db.query(getPropertyByIdQuery, [
+                            id
+                        ], function(err, result) {
+                            if (result.length > 0) {
+                                if (result[0].user_id == req.body.user_id) {
+                                    const image_id = result[0].image_id;
+                                    const image_url = result[0].image_url;
+                                    if (image) {
+                                        Cloudinary.UploadImage(image, (err, data) => {
+                                            /* Checking if there is an error and returning an error message if there is an error. */
+                                            if (err)
+                                                res.status(500).json({
+                                                    status: 'error',
+                                                    error: err.message || "Some error occurred while uploading Image"
+                                                });
 
-                                        else {
-                                            /* Destructuring the data object. */
-                                            const { secure_url, public_id } = data;
-                                            /* Destructuring the data object. */
-                                            const image_url = secure_url;
-                                            const image_id = public_id;
-                                            const properties = {
-                                                user_id,
-                                                category_id,
-                                                price,
-                                                state,
-                                                city,
-                                                address,
-                                                description,
-                                                image_url,
-                                                image_id,
-                                                status,
-                                                id
-                                            };
-                                            Properties.updatePropertyDetails(properties, (err, data) => {
-                                                if (err) {
-                                                    console.log("error: ", err);
-                                                } else {
-                                                    res.status(201).json({
-                                                        status: 'success',
-                                                        data: {
-                                                            id: data.id,
-                                                            user_id: data.user_id,
-                                                            category_id: data.category_id,
-                                                            price: data.price,
-                                                            state: data.state,
-                                                            city: data.city,
-                                                            address: data.address,
-                                                            description: data.description,
-                                                            image_url: data.image_url,
-                                                            image_id: data.image_id,
-                                                            status: data.status
-                                                        }
-                                                    });
-                                                }
-                                            })
-                                        }
-                                    });
+                                            else {
+                                                /* Destructuring the data object. */
+                                                const { secure_url, public_id } = data;
+                                                /* Destructuring the data object. */
+                                                const image_url = secure_url;
+                                                const image_id = public_id;
+                                                const properties = {
+                                                    user_id,
+                                                    category_id,
+                                                    price,
+                                                    state,
+                                                    city,
+                                                    address,
+                                                    description,
+                                                    image_url,
+                                                    image_id,
+                                                    status,
+                                                    id
+                                                };
+                                                Properties.updatePropertyDetails(properties, (err, data) => {
+                                                    if (err) {
+                                                        console.log("error: ", err);
+                                                    } else {
+                                                        res.status(201).json({
+                                                            status: 'success',
+                                                            data: {
+                                                                id: data.id,
+                                                                user_id: data.user_id,
+                                                                category_id: data.category_id,
+                                                                price: data.price,
+                                                                state: data.state,
+                                                                city: data.city,
+                                                                address: data.address,
+                                                                description: data.description,
+                                                                image_url: data.image_url,
+                                                                image_id: data.image_id,
+                                                                status: data.status
+                                                            }
+                                                        });
+                                                    }
+                                                })
+                                            }
+                                        });
+                                    } else {
+
+                                        const properties = {
+                                            user_id,
+                                            category_id,
+                                            price,
+                                            state,
+                                            city,
+                                            address,
+                                            description,
+                                            image_url,
+                                            image_id,
+                                            status,
+                                            id
+                                        };
+                                        Properties.updatePropertyDetails(properties, (err, data) => {
+                                            if (err) {
+                                                console.log("error: ", err);
+                                            } else {
+                                                res.status(201).json({
+                                                    status: 'success',
+                                                    data: {
+                                                        id: data.id,
+                                                        user_id: data.user_id,
+                                                        category_id: data.category_id,
+                                                        price: data.price,
+                                                        state: data.state,
+                                                        city: data.city,
+                                                        address: data.address,
+                                                        description: data.description,
+                                                        image_url: data.image_url,
+                                                        image_id: data.image_id,
+                                                        status: data.status
+                                                    }
+                                                });
+                                            }
+                                        })
+                                    }
                                 } else {
-
-                                    const properties = {
-                                        user_id,
-                                        category_id,
-                                        price,
-                                        state,
-                                        city,
-                                        address,
-                                        description,
-                                        image_url,
-                                        image_id,
-                                        status,
-                                        id
-                                    };
-                                    Properties.updatePropertyDetails(properties, (err, data) => {
-                                        if (err) {
-                                            console.log("error: ", err);
-                                        } else {
-                                            res.status(201).json({
-                                                status: 'success',
-                                                data: {
-                                                    id: data.id,
-                                                    user_id: data.user_id,
-                                                    category_id: data.category_id,
-                                                    price: data.price,
-                                                    state: data.state,
-                                                    city: data.city,
-                                                    address: data.address,
-                                                    description: data.description,
-                                                    image_url: data.image_url,
-                                                    image_id: data.image_id,
-                                                    status: data.status
-                                                }
-                                            });
-                                        }
-                                    })
+                                    res.status(401).json({
+                                        status: 'error',
+                                        error: "Oops You Are Not Authorized To Update This Property",
+                                    });
                                 }
                             } else {
-                                res.status(401).json({
+                                res.status(404).json({
                                     status: 'error',
-                                    error: "Oops You Are Not Authorized To Update This Property",
+                                    error: "This Property Does Not Exist",
                                 });
                             }
-                        } else {
-                            res.status(404).json({
-                                status: 'error',
-                                error: "This Property Does Not Exist",
-                            });
-                        }
-                    });
-                } else {
-                    res.status(401).json({
-                        status: 'error',
-                        error: "Category Does Not Exist",
-                    });
-                }
-            })
+                        });
+                    } else {
+                        res.status(401).json({
+                            status: 'error',
+                            error: "Category Does Not Exist",
+                        });
+                    }
+                })
+            }
         }
     }
 }
@@ -536,82 +543,86 @@ exports.getExtraPropertyImages = (req, res) => {
 exports.addExtraPropertyImages = (req, res) => {
     const { id } = req.params;
     const images = req.files;
-    if (!(images)) {
+    console.log(images);
+    // if (!(images)) {
+    //     res.status(401).json({
+    //         status: 'error',
+    //         error: "Oops images are required"
+    //     });
+    // } else {
+    //     const { errors, valid } = validateIdAsNumeric(id);
+    //     if (!valid) {
+    //         return Response.send(
+    //             res.status(401),
+    //             'error',
+    //             errors
+    //         )
+    //     } else {
+    //         db.query(getPropertyByIdQuery, [
+    //             id
+    //         ], function(err, result) {
+    //             if (result.length > 0) {
+    //                 if (req.files.length > 0) {
+    //                     // const images = req.files;
+    //                     const images_url = [];
+    //                     const images_id = [];
 
-    } else {
-        const { errors, valid } = validateIdAsNumeric(id);
-        if (!valid) {
-            return Response.send(
-                res.status(401),
-                'error',
-                errors
-            )
-        } else {
-            db.query(getPropertyByIdQuery, [
-                id
-            ], function(err, result) {
-                if (result.length > 0) {
-                    if (req.files.length > 0) {
-                        const images = req.files;
-                        const images_url = [];
-                        const images_id = [];
+    //                     for (let i = 0; i < images.length; i++) {
+    //                         const image = images[i];
+    //                         Cloudinary.UploadImage(image, (err, data) => {
+    //                             /* Checking if there is an error and returning an error message if there is an error. */
+    //                             if (err)
+    //                                 res.status(500).json({
+    //                                     status: 'error',
+    //                                     error: err.message || "Some error occurred while uploading Image"
+    //                                 });
 
-                        for (let i = 0; i < images.length; i++) {
-                            const image = images[i];
-                            Cloudinary.UploadImage(image, (err, data) => {
-                                /* Checking if there is an error and returning an error message if there is an error. */
-                                if (err)
-                                    res.status(500).json({
-                                        status: 'error',
-                                        error: err.message || "Some error occurred while uploading Image"
-                                    });
+    //                             else {
+    //                                 /* Destructuring the data object. */
+    //                                 const { secure_url, public_id } = data;
+    //                                 /* Destructuring the data object. */
+    //                                 const image_url = secure_url;
+    //                                 const image_id = public_id;
+    //                                 images_url.push(image_url);
+    //                                 images_id.push(image_id);
+    //                                 if (i == images.length - 1) {
+    //                                     const extra_images = {
+    //                                         user_id: req.body.user_id,
+    //                                         property_id: id,
+    //                                         images_url,
+    //                                         images_id
+    //                                     };
+    //                                     Properties.addExtraPropertyImages(extra_images, (err, data) => {
+    //                                         if (err) {
+    //                                             console.log("error: ", err);
+    //                                         } else {
+    //                                             res.status(201).json({
+    //                                                 status: 'success',
+    //                                                 data: data
+    //                                             });
+    //                                         }
+    //                                     })
+    //                                 } else {
+    //                                     return;
+    //                                 }
+    //                             }
+    //                         });
+    //                     }
+    //                 } else {
+    //                     res.status(401).json({
+    //                         status: 'error',
+    //                         error: "Oops, there's no images to add",
+    //                     });
+    //                 }
 
-                                else {
-                                    /* Destructuring the data object. */
-                                    const { secure_url, public_id } = data;
-                                    /* Destructuring the data object. */
-                                    const image_url = secure_url;
-                                    const image_id = public_id;
-                                    images_url.push(image_url);
-                                    images_id.push(image_id);
-                                    if (i == images.length - 1) {
-                                        const extra_images = {
-                                            user_id: req.body.user_id,
-                                            property_id: id,
-                                            images_url,
-                                            images_id
-                                        };
-                                        Properties.addExtraPropertyImages(extra_images, (err, data) => {
-                                            if (err) {
-                                                console.log("error: ", err);
-                                            } else {
-                                                res.status(201).json({
-                                                    status: 'success',
-                                                    data: data
-                                                });
-                                            }
-                                        })
-                                    } else {
-                                        return;
-                                    }
-                                }
-                            });
-                        }
-                    } else {
-                        res.status(401).json({
-                            status: 'error',
-                            error: "Oops, there's no images to add",
-                        });
-                    }
+    //             } else {
+    //                 res.status(404).json({
+    //                     status: 'error',
+    //                     error: "This Property Does Not Exist",
+    //                 });
+    //             }
 
-                } else {
-                    res.status(404).json({
-                        status: 'error',
-                        error: "This Property Does Not Exist",
-                    });
-                }
-
-            })
-        }
-    }
+    //         })
+    //     }
+    // }
 }
