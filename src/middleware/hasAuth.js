@@ -15,7 +15,7 @@ exports.hasAuth = (req, res, next) => {
     /* Destructuring the user_id from the request body. */
     const { user_id } = req.body;
 
-    if (!(user_id)) {
+    if (!(Number(user_id))) {
         return res.status(401).json({
             status: 'error',
             error: "user_id is required in request body",
