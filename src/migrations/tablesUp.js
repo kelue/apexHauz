@@ -6,6 +6,7 @@ const {
     createPasswordResetsTable: createPasswordResetsTableQuery,
     createPropertiesUserForeignKeys: createPropertiesUserForeignKeysQuery,
     createPropertiesCategoriesForeignKeys: createPropertiesCategoriesForeignKeysQuery,
+    createImagesPropertyForeignKeys: createImagesPropertyForeignKeysQuery,
     createPasswordResetsUserForeignKeys: createPasswordResetsUserForeignKeysQuery
 } = require('../database/queries/tables_queries');
 const { connection: db } = require('../config/db.config');
@@ -58,6 +59,13 @@ db.query(createPropertiesCategoriesForeignKeysQuery, (err, _) => {
         return;
     }
     console.log('Properties & Categories Foreign Keys Created Successfully');
+});
+db.query(createImagesPropertyForeignKeysQuery, (err, _) => {
+    if (err) {
+        console.log("error: ", err);
+        return;
+    }
+    console.log('Images & Properties Foreign Keys Created Successfully');
 });
 db.query(createPasswordResetsUserForeignKeysQuery, (err, _) => {
     if (err) {
