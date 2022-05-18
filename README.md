@@ -61,4 +61,6 @@ Check Issues section to see todos and features to work on and indicate that you 
         }
     }
 
+### Noted on additional features
 
+    Please configure your email server in the .env File and use a valid email address for testing
