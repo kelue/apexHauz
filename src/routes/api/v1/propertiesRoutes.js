@@ -14,6 +14,11 @@ module.exports = app => {
     /* This is a route that is used to search for a property. */
     router.get("/property/search", propertiesController.searchForProperty);
 
+    router.get("/property/:id/images", hasAuth, propertiesController.getExtraPropertyImages);
+
+
+    router.post("/property/:id/images/add", hasAuth, propertiesController.addExtraPropertyImages);
+
     /* This is a route that is used to get a property by its id. */
     router.get("/property/:id", hasAuth, propertiesController.getPropertiesById);
 

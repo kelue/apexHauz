@@ -9,6 +9,11 @@ const {
     updatePropertyDetails: updatePropertyDetailsQuery
 } = require("../database/queries/properties");
 
+
+const {
+    addExtraPropertyImages: addExtraPropertyImagesQuery
+} = require("../database/queries/images");
+
 class Properties {
     /**
      * The constructor function is a special method for creating and initializing an object created
@@ -44,7 +49,6 @@ class Properties {
                 result(null, err);
                 return;
             }
-
             result(null, res);
         });
     }
@@ -176,8 +180,21 @@ class Properties {
                 };
                 result(null, info);
                 return;
-                //console.log("hey");
-                // return next();
+            }
+        })
+    }
+
+    static addExtraPropertyImages(extra_images, result) {
+        db.query(addExtraPropertyImagesQuery, [
+            extra_images.property_id,
+            extra_images.image_url,
+            extra_images.image_id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                return result(null, res);
             }
         })
     }
