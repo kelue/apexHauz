@@ -43,8 +43,22 @@ Check Issues section to see todos and features to work on and indicate that you 
 
 ### Additional API Endpoints
     
-    /api/v1/forgot-password
+    /api/v1/forgot-password => {
 
     Required Params {
         email
     }
+
+    }
+
+
+
+    /api/v1/reset-password => {
+
+        Required Parameters {
+            token,
+            new_password
+        }
+    }
+
+
