@@ -61,64 +61,6 @@ class Cloudinary {
             }
         });
     }
-
-    /** 
-     * 
-     * @author Ahmad Busari
-     * @param {Array} An array of the uploaded files object from multer (req.files).
-     * @returns {Array} An array of objects for each image containing the secure_url and public_id properties as url and id respectively.
-     * @description This method takes in an array of files from multer, maps them into another array of objects containing the url and id to the uploaded files which can the be saved into the database.
-     * 
-     */
-    static async UploadMultipleImages(images) {
-        try {
-            const links = images.map(async(image) => {
-                const uploadedImage = await cloudinary.uploader.upload(image.path);
-                fs.unlink(image.path);
-                const newImage = { url: uploadedImage.secure_url, id: uploadedImage.public_id };
-
-                return newImage;
-            });
-            return await Promise.all(links);
-        } catch (error) {
-            console.log(error);
-        }
-
-    }
-
-    static async uploadToCloudinary(images) {
-
-        // locaFilePath: path of image which was just
-        // uploaded to "uploads" folder
-
-        var mainFolderName = "main";
-        // filePathOnCloudinary: path of image we want
-        // to set when it is uploaded to cloudinary
-        var filePathOnCloudinary =
-            mainFolderName + "/" + locaFilePath;
-
-        return cloudinary.uploader
-            .upload(locaFilePath, { public_id: filePathOnCloudinary })
-            .then((result) => {
-
-                // Image has been successfully uploaded on
-                // cloudinary So we dont need local image 
-                // file anymore
-                // Remove file from local uploads folder
-                //  fs.unlinkSync(locaFilePath);
-
-                return {
-                    message: "Success",
-                    url: result,
-                };
-            })
-            .catch((error) => {
-
-                // Remove file from local uploads folder
-                //  fs.unlinkSync(locaFilePath);
-                return { message: "Fail" };
-            });
-    }
 }
 
 
