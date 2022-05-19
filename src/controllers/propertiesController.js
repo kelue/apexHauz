@@ -555,7 +555,7 @@ exports.getExtraPropertyImages = (req, res) => {
 
 exports.addExtraPropertyImages = async(req, res) => {
     const { id } = req.params;
-    const { images } = req.body;
+    const { images, user_id } = req.body;
     if (!(images)) {
         res.status(401).json({
             status: 'error',
@@ -574,40 +574,47 @@ exports.addExtraPropertyImages = async(req, res) => {
                 id
             ], async function(err, result) {
                 if (result.length > 0) {
-                    if (images) {
-                        await Cloudinary.UploadImage(images, (err, data) => {
-                            if (err) {
-                                res.status(500).json({
-                                    status: 'error',
-                                    error: err.message || "Some error occurred while uploading Image"
-                                });
-                            } else {
-                                const { secure_url, public_id } = data;
-                                const image_url = secure_url;
-                                const image_id = public_id;
+                    if (result[0].user_id == user_id) {
+                        if (images) {
+                            await Cloudinary.UploadImage(images, (err, data) => {
+                                if (err) {
+                                    res.status(500).json({
+                                        status: 'error',
+                                        error: err.message || "Some error occurred while uploading Image"
+                                    });
+                                } else {
+                                    const { secure_url, public_id } = data;
+                                    const image_url = secure_url;
+                                    const image_id = public_id;
 
-                                const extra_images = {
-                                    user_id: req.body.user_id,
-                                    property_id: id,
-                                    image_url,
-                                    image_id
-                                };
-                                Properties.addExtraPropertyImages(extra_images, (err, data) => {
-                                    if (err) {
-                                        console.log("error: ", err);
-                                    } else {
-                                        res.status(201).json({
-                                            status: 'success',
-                                            data: data
-                                        });
-                                    }
-                                })
-                            }
-                        });
+                                    const extra_images = {
+                                        user_id: req.body.user_id,
+                                        property_id: id,
+                                        image_url,
+                                        image_id
+                                    };
+                                    Properties.addExtraPropertyImages(extra_images, (err, data) => {
+                                        if (err) {
+                                            console.log("error: ", err);
+                                        } else {
+                                            res.status(201).json({
+                                                status: 'success',
+                                                data: data
+                                            });
+                                        }
+                                    })
+                                }
+                            });
+                        } else {
+                            res.status(401).json({
+                                status: 'error',
+                                error: "Oops, there's no images to add",
+                            });
+                        }
                     } else {
                         res.status(401).json({
                             status: 'error',
-                            error: "Oops, there's no images to add",
+                            error: "Oops You Are Not Authorized To Update This Property",
                         });
                     }
                 } else {
@@ -678,4 +685,7 @@ exports.reportProperty = (req, res) => {
             })
         }
     }
+}
+}
+}
 }
