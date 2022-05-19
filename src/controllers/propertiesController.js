@@ -4,6 +4,8 @@ const Properties = require('../models/properties.js');
 /* Importing the cloudinary module from the utils folder. */
 const Cloudinary = require('../utils/cloudinary');
 
+require('dotenv').config();
+
 /* Importing the createProperties and validateIdAsNumeric functions from the validator.js file. */
 const {
     createProperties,
@@ -43,6 +45,8 @@ const {
 
 /* A function that returns a response object. */
 const Response = require("../utils/responseHandler.js");
+
+const cloudinary = require("cloudinary").v2;
 
 exports.getAllProperties = (req, res) => {
     /* A function that returns all properties in the database. */
@@ -548,10 +552,11 @@ exports.getExtraPropertyImages = (req, res) => {
     }
 }
 
-exports.addExtraPropertyImages = (req, res) => {
+
+exports.addExtraPropertyImages = async(req, res) => {
     const { id } = req.params;
     const images = req.files;
-    console.log(images);
+    console.log(images.lenght);
     if (!(images)) {
         res.status(401).json({
             status: 'error',
@@ -568,54 +573,28 @@ exports.addExtraPropertyImages = (req, res) => {
         } else {
             db.query(getPropertyByIdQuery, [
                 id
-            ], function(err, result) {
+            ], async function(err, result) {
                 if (result.length > 0) {
                     if (images) {
-                        // const images = req.files;
-                        const images_url = [];
-                        const images_id = [];
-
+                        const image_ids = [];
+                        const image_urls = [];
                         for (let i = 0; i < images.length; i++) {
                             const image = images[i];
-                            Cloudinary.UploadImage(image, (err, data) => {
-                                /* Checking if there is an error and returning an error message if there is an error. */
-                                if (err)
-                                    res.status(500).json({
-                                        status: 'error',
-                                        error: err.message || "Some error occurred while uploading Image"
-                                    });
-
-                                else {
-                                    /* Destructuring the data object. */
-                                    const { secure_url, public_id } = data;
-                                    /* Destructuring the data object. */
-                                    const image_url = secure_url;
-                                    const image_id = public_id;
-                                    images_url.push(image_url);
-                                    images_id.push(image_id);
-                                    if (i == images.length - 1) {
-                                        const extra_images = {
-                                            user_id: req.body.user_id,
-                                            property_id: id,
-                                            images_url,
-                                            images_id
-                                        };
-                                        Properties.addExtraPropertyImages(extra_images, (err, data) => {
-                                            if (err) {
-                                                console.log("error: ", err);
-                                            } else {
-                                                res.status(201).json({
-                                                    status: 'success',
-                                                    data: data
-                                                });
-                                            }
-                                        })
-                                    } else {
-                                        return;
-                                    }
-                                }
-                            });
+                            const image_url = image.path;
+                            const image_id = image.filename;
+                            const property_id = id;
+                            const property_image = {
+                                property_id,
+                                image_url,
+                                image_id
+                            };
+                            const result = await Cloudinary.uploadImage(image);
+                            image_ids.push(result.image_id);
                         }
+                        res.status(201).json({
+                            status: 'success',
+                            data: image_ids
+                        });
                     } else {
                         res.status(401).json({
                             status: 'error',
