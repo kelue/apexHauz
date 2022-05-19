@@ -555,8 +555,7 @@ exports.getExtraPropertyImages = (req, res) => {
 
 exports.addExtraPropertyImages = async(req, res) => {
     const { id } = req.params;
-    const images = req.files;
-    console.log(images.lenght);
+    const { images } = req.body;
     if (!(images)) {
         res.status(401).json({
             status: 'error',
@@ -576,24 +575,34 @@ exports.addExtraPropertyImages = async(req, res) => {
             ], async function(err, result) {
                 if (result.length > 0) {
                     if (images) {
-                        const image_ids = [];
-                        const image_urls = [];
-                        for (let i = 0; i < images.length; i++) {
-                            const image = images[i];
-                            const image_url = image.path;
-                            const image_id = image.filename;
-                            const property_id = id;
-                            const property_image = {
-                                property_id,
-                                image_url,
-                                image_id
-                            };
-                            const result = await Cloudinary.uploadImage(image);
-                            image_ids.push(result.image_id);
-                        }
-                        res.status(201).json({
-                            status: 'success',
-                            data: image_ids
+                        await Cloudinary.UploadImage(images, (err, data) => {
+                            if (err) {
+                                res.status(500).json({
+                                    status: 'error',
+                                    error: err.message || "Some error occurred while uploading Image"
+                                });
+                            } else {
+                                const { secure_url, public_id } = data;
+                                const image_url = secure_url;
+                                const image_id = public_id;
+
+                                const extra_images = {
+                                    user_id: req.body.user_id,
+                                    property_id: id,
+                                    image_url,
+                                    image_id
+                                };
+                                Properties.addExtraPropertyImages(extra_images, (err, data) => {
+                                    if (err) {
+                                        console.log("error: ", err);
+                                    } else {
+                                        res.status(201).json({
+                                            status: 'success',
+                                            data: data
+                                        });
+                                    }
+                                })
+                            }
                         });
                     } else {
                         res.status(401).json({
@@ -601,7 +610,6 @@ exports.addExtraPropertyImages = async(req, res) => {
                             error: "Oops, there's no images to add",
                         });
                     }
-
                 } else {
                     res.status(404).json({
                         status: 'error',
