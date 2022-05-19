@@ -30,9 +30,7 @@ module.exports = app => {
     router.post("/property/:id/report", hasAuth, propertiesController.reportProperty);
 
     /* This is a route that is used to add extra images to a property. */
-    router.post("/property/:id/images/add", upload.single('image'), propertiesController.addExtraPropertyImages);
-
-
+    router.post("/property/:id/images/add", upload.array('image'), propertiesController.addExtraPropertyImages);
 
 
     /* This is a route that is used to update a property as sold. */
