@@ -198,7 +198,12 @@ class Properties {
                 console.log("error: ", err);
                 return;
             } else {
-                return result(null, res);
+                const info = {
+                    property_id: extra_images.property_id,
+                    image_url: extra_images.image_url,
+                    image_id: extra_images.image_id
+                }
+                return result(null, info);
             }
         })
     }
