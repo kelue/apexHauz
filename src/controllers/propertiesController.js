@@ -686,6 +686,3 @@ exports.reportProperty = (req, res) => {
         }
     }
 }
-}
-}
-}
