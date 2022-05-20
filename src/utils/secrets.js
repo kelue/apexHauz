@@ -12,6 +12,7 @@ const requiredCredentials = [
 
 for (const credential of requiredCredentials) {
     if (!process.env[credential]) {
+        console.log(`Missing important ${credential} in .env file`);
         process.exit(1);
     }
 }
