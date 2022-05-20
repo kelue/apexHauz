@@ -26,7 +26,7 @@ require("./src/routes/api/v1/usersRoutes.js")(app);
 require("./src/routes/api/v1/propertiesRoutes.js")(app);
 
 // set port, listen for requests
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.SERVER_PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}.`);
 });
