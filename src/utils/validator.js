@@ -100,8 +100,36 @@ const createProperties = (state, city, address) => {
     }
 }
 
+const validateIdAsNumeric = (id) => {
+    const errors = {};
+    if (!validator.isNumeric(id)) {
+        errors["id"] = "Request ID must be numeric";
+    }
+
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    }
+}
+
+const validateReportProperty = (reason, description) => {
+    const errors = {};
+    if (validator.isEmpty(reason)) {
+        errors["reason"] = "Reason is Required";
+    }
+    if (validator.isEmpty(description)) {
+        errors["description"] = "Description is Required";
+    }
+    return {
+        errors,
+        valid: Object.keys(errors).length < 1
+    }
+}
+
 module.exports = {
     signup,
     signin,
-    createProperties
+    createProperties,
+    validateIdAsNumeric,
+    validateReportProperty
 }

@@ -4,7 +4,19 @@ const {
     getAllProperties: getAllPropertiesQuery,
     getPropertyById: getPropertyByIdQuery,
     createNewProperty: createNewPropertyQuery,
+    updatePropertyStatus: updatePropertyStatusQuery,
+    deleteProperty: deletePropertyQuery,
+    updatePropertyDetails: updatePropertyDetailsQuery
 } = require("../database/queries/properties");
+
+
+const {
+    addExtraPropertyImages: addExtraPropertyImagesQuery
+} = require("../database/queries/images");
+
+const {
+    createNewReport: createNewReportQuery
+} = require('../database/queries/reports');
 
 class Properties {
     /**
@@ -41,7 +53,6 @@ class Properties {
                 result(null, err);
                 return;
             }
-
             result(null, res);
         });
     }
@@ -114,6 +125,110 @@ class Properties {
                 return;
             }
         });
+    }
+    static updatePropertyStatus(id, status, next) {
+        db.query(updatePropertyStatusQuery, [
+            status,
+            id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                return next();
+            }
+        })
+    }
+    static deleteProperty(id, next) {
+        db.query(deletePropertyQuery, [
+            id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                return next();
+            }
+        })
+    }
+
+    static updatePropertyDetails(properties, result) {
+        db.query(updatePropertyDetailsQuery, [
+            properties.category_id,
+            properties.price,
+            properties.state,
+            properties.city,
+            properties.description,
+            properties.address,
+            properties.status,
+            properties.image_url,
+            properties.image_id,
+            properties.id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                const info = {
+                    id: properties.id,
+                    user_id: properties.user_id,
+                    category_id: properties.category_id,
+                    price: properties.price,
+                    state: properties.state,
+                    city: properties.city,
+                    address: properties.address,
+                    description: properties.description,
+                    image_url: properties.image_url,
+                    image_id: properties.image_id,
+                    status: properties.status
+                };
+                result(null, info);
+                return;
+            }
+        })
+    }
+
+    static addExtraPropertyImages(extra_images, result) {
+        db.query(addExtraPropertyImagesQuery, [
+            extra_images.property_id,
+            extra_images.image_url,
+            extra_images.image_id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                const info = {
+                    property_id: extra_images.property_id,
+                    image_url: extra_images.image_url,
+                    image_id: extra_images.image_id
+                }
+                return result(null, info);
+            }
+        })
+    }
+
+    static reportProperty(details, result) {
+        db.query(createNewReportQuery, [
+            details.user_id,
+            details.property_id,
+            details.reason,
+            details.description
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                const info = {
+                    id: res.insertId,
+                    user_id: details.user_id,
+                    property_id: details.property_id,
+                    reason: details.reason,
+                    description: details.description
+                }
+                return result(null, info);
+            }
+        })
     }
 }
 
