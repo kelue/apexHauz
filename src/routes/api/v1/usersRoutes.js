@@ -3,8 +3,8 @@ const router = require("express").Router();
 /* Importing the userController.js file. */
 const userController = require('../../../controllers/usersController');
 
-/* Importing the hasAuth middleware. */
-const { hasAuth } = require('../../../middleware/hasAuth')
+// /* Importing the hasAuth middleware. */
+// const { hasAuth } = require('../../../middleware/hasAuth')
 
 /* Exporting the routes to the server.js file. */
 module.exports = app => {
@@ -19,14 +19,11 @@ module.exports = app => {
     /* A route that is used to find all the users in the database. */
     router.get("/", userController.findAll);
 
-    // Retrieve a single User with id
-    // router.get("/:id", userController.findOne);
+    /* This is a route that is used to reset the password of a user. */
+    router.post("/auth/reset-password", userController.resetPassword);
 
-    // // Update a User with id
-    // router.put("/:id", userController.update);
-
-    // // Delete a User with id
-    // router.delete("/:id", userController.delete);
+    /* This is a route that is used to send a password reset link to the user's email address. */
+    router.post("/auth/forgot-password", userController.forgotPassword);
 
     /* Telling the server to use the router for the api/v1 route. */
     app.use('/api/v1', router);
