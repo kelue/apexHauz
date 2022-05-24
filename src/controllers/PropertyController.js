@@ -132,6 +132,30 @@ const updatePropertyById = async (req, res) => {
     }
 }
 
+const markAsSold = async (req, res) => {
+    const user = req.user;
+    const id = req.params.id;
+    try {
+        const property = await Property.findByPk(id);
+        if (!property) throw new CreateError(404, 'Property not found!');
+        const isValidUserProperty = !user.is_admin ? await user.hasProperty(property) : true;
+        if (!isValidUserProperty) throw new CreateError(403, 'Access denied!');
+
+        property.status = 'sold';
+        await property.save();
+
+        res.status(200).json({
+            status: 'success',
+            data: property,
+        })
+    } catch (error) {
+        res.status(error.status ?? 500).json({
+            status: 'error',
+            error: error.message ?? 'An error occured on the server. Try again or contact administrator if error persists.',
+        })
+    }
+}
+
 const deletePropertyById = async (req, res) => {
     const user = req.user;
     const id = req.params.id;
@@ -161,5 +185,6 @@ module.exports = {
     getPropertyUser,
     getPropertyCategory,
     updatePropertyById,
+    markAsSold,
     deletePropertyById,
 }
