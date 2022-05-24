@@ -19,10 +19,10 @@ exports.getAllProperties = (req, res) => {
         /* A callback function that returns an error message if there is an error and returns the data
         if there is no error. */
         if (err)
-        /* Returning an error message if there is an error. */
+            /* Returning an error message if there is an error. */
             res.status(500).send({
-            message: err.message || "Some error occurred while retrieving properties."
-        });
+                message: err.message || "Some error occurred while retrieving properties."
+            });
         else res.send(data);
     });
 }
@@ -47,7 +47,7 @@ exports.getPropertiesById = (req, res) => {
 
 
 /* A function that creates a property. */
-exports.createProperties = async(req, res) => {
+exports.createProperties = async (req, res) => {
     /* Destructuring the request body. */
     const { user_id, category_id, price, state, city, address, description, image, status } = req.body;
 
@@ -66,11 +66,11 @@ exports.createProperties = async(req, res) => {
         /* Uploading the image to cloudinary. */
         db.query(findUserByIdQuery, [
             user_id
-        ], function(err, result) {
+        ], function (err, result) {
             if (result.length > 0) {
                 db.query(findCategoryByIdQuery, [
                     category_id
-                ], function(err, result) {
+                ], function (err, result) {
                     if (result.length > 0) {
                         try {
                             //upload.single(image);
@@ -140,3 +140,20 @@ exports.createProperties = async(req, res) => {
         });
     }
 };
+
+exports.getUserProperties = async (req, res) => {
+    const user = req.user;
+
+    try {
+        const properties = await user.getProperties();
+        res.status(200).json({
+            status: 'success',
+            data: properties,
+        })
+    } catch (error) {
+        res.status(error.status ?? 500).json({
+            status: 'error',
+            error: error.message ?? 'An error occured on the server. Try again or contact administrator if error persists.',
+        })
+    }
+}
