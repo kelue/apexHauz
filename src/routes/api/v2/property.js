@@ -1,10 +1,11 @@
 const router = require('express').Router();
 
 const AuthMiddleware = require('../../../middleware/AuthMiddleware');
-const { createProperty, getAllProperties, getPropertyById, updatePropertyById, deletePropertyById, getPropertyUser, getPropertyCategory } = require('../../../controllers/PropertyController');
+const { createProperty, getAllProperties, getPropertyById, updatePropertyById, deletePropertyById, getPropertyUser, getPropertyCategory, getPropertyBySearchQuery } = require('../../../controllers/PropertyController');
 
 router.post('/', AuthMiddleware, createProperty);
 router.get('/', getAllProperties);
+router.get('/search', getPropertyBySearchQuery);
 router.get('/:id', getPropertyById);
 router.patch('/:id', AuthMiddleware, updatePropertyById);
 router.delete('/:id', AuthMiddleware, deletePropertyById);

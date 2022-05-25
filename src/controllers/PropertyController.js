@@ -1,4 +1,5 @@
 const CreateError = require('http-errors');
+const { Op } = require('sequelize');
 
 const Property = require("../models/Property");
 
@@ -24,13 +25,27 @@ const getAllProperties = async (req, res) => {
     let noOfPropertiesToSkip;
     const page = req.query?.page ?? 1;
     const propertiesPerPage = 9;
-    if (page <= 0) noOfPropertiesToSkip = 0;
     noOfPropertiesToSkip = (page - 1) * propertiesPerPage;
+    if (page <= 0) noOfPropertiesToSkip = 0;
     try {
         const { count, rows: data } = await Property.findAndCountAll({
             limit: propertiesPerPage,
             offset: noOfPropertiesToSkip,
             order: [['created_at', 'DESC']],
+            include: [
+                {
+                    association: 'proprietor',
+                    attributes: {
+                        exclude: ['password', 'phone', 'address', 'email', 'created_at', 'updated_at'],
+                    },
+                },
+                {
+                    association: 'category',
+                    attributes: {
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                }
+            ],
         });
 
         res.status(200).json({
@@ -49,7 +64,22 @@ const getAllProperties = async (req, res) => {
 const getPropertyById = async (req, res) => {
     const id = req.params.id;
     try {
-        const property = await Property.findByPk(id);
+        const property = await Property.findByPk(id, {
+            include: [
+                {
+                    association: 'proprietor',
+                    attributes: {
+                        exclude: ['password', 'phone', 'address', 'email', 'created_at', 'updated_at'],
+                    },
+                },
+                {
+                    association: 'category',
+                    attributes: {
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                }
+            ],
+        });
         if (!property) throw new CreateError(404, 'Property not found!');
 
         res.status(200).json({
@@ -92,6 +122,52 @@ const getPropertyCategory = async (req, res) => {
             status: 'success',
             data: category,
         })
+    } catch (error) {
+        res.status(error.status ?? 500).json({
+            status: 'error',
+            error: error.message ?? 'An error occured on the server. Try again or contact administrator if error persists.',
+        })
+    }
+}
+
+const getPropertyBySearchQuery = async (req, res) => {
+    const type = req.query?.type ?? '';
+    let noOfPropertiesToSkip;
+    const page = req.query?.page ?? 1;
+    const propertiesPerPage = 9;
+    noOfPropertiesToSkip = (page - 1) * propertiesPerPage;
+    if (page <= 0) noOfPropertiesToSkip = 0;
+    try {
+        const { count, rows: data } = await Property.findAndCountAll({
+            where: {
+                type: {
+                    [Op.like]: `%${type}%`
+                }
+            },
+            limit: propertiesPerPage,
+            offset: noOfPropertiesToSkip,
+            order: [['created_at', 'DESC']],
+            include: [
+                {
+                    association: 'proprietor',
+                    attributes: {
+                        exclude: ['password', 'phone', 'address', 'email', 'created_at', 'updated_at'],
+                    },
+                },
+                {
+                    association: 'category',
+                    attributes: {
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                }
+            ],
+        });
+
+        res.status(200).json({
+            status: 'success',
+            data,
+            count,
+        });
     } catch (error) {
         res.status(error.status ?? 500).json({
             status: 'error',
@@ -184,6 +260,7 @@ module.exports = {
     getPropertyById,
     getPropertyUser,
     getPropertyCategory,
+    getPropertyBySearchQuery,
     updatePropertyById,
     markAsSold,
     deletePropertyById,
