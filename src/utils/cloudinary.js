@@ -18,7 +18,6 @@ cloudinary.config({
  * @copyright MIT
  *  
  * */
-
 const uploadImageToCloudinary = (image) => {
     return cloudinary.uploader.upload(image)
 }

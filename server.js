@@ -30,7 +30,6 @@ app.get("/", (req, res) => {
 app.use('/api/v2', api);
 
 require("./src/routes/api/v1/usersRoutes.js")(app);
-
 require("./src/routes/api/v1/propertiesRoutes.js")(app);
 
 api.use('/auth', AuthRoutes);
@@ -39,6 +38,15 @@ api.use('/properties', PropertyRoutes);
 api.use('/categories', CategoryRoutes);
 api.use('/user', UserPropertyRoute);
 api.use('/reports', ReportRoutes);
+
+app.use((err, req, res, next) => {
+    /* This is a middleware that is used to catch any errors that may occur in the application. */
+    res.status(err.statusCode ?? 500).send({
+        status: 'error',
+        message: err.message,
+    });
+    next();
+});
 
 // set port, listen for requests
 const PORT = process.env.SERVER_PORT ?? 3000;
