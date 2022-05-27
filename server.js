@@ -8,9 +8,11 @@ const { CategoryRoutes } = require("./src/routes/api/v2/category.js");
 const { PropertyRoutes } = require("./src/routes/api/v2/property.js");
 const { UserRoutes } = require("./src/routes/api/v2/user.js");
 const { UserPropertyRoute } = require("./src/routes/api/v2/user/property.js");
+const { ReportRoutes } = require("./src/routes/api/v2/report.js");
 
 
 const app = express();
+const api = express();
 
 app.use(CookieParser(process.env.COOKIE_SECRET_KEY));
 
@@ -25,16 +27,18 @@ app.get("/", (req, res) => {
     res.json({ message: "Welcome to SideHustle Node REST API with express." });
 });
 
+app.use('/api/v2', api);
 
 require("./src/routes/api/v1/usersRoutes.js")(app);
 
 require("./src/routes/api/v1/propertiesRoutes.js")(app);
 
-app.use('/api/v2/auth', AuthRoutes);
-app.use('/api/v2/users', UserRoutes);
-app.use('/api/v2/properties', PropertyRoutes);
-app.use('/api/v2/categories', CategoryRoutes);
-app.use('/api/v2/user', UserPropertyRoute);
+api.use('/auth', AuthRoutes);
+api.use('/users', UserRoutes);
+api.use('/properties', PropertyRoutes);
+api.use('/categories', CategoryRoutes);
+api.use('/user', UserPropertyRoute);
+api.use('/reports', ReportRoutes);
 
 // set port, listen for requests
 const PORT = process.env.SERVER_PORT ?? 3000;

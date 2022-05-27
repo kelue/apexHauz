@@ -1,14 +1,20 @@
 const CreateError = require('http-errors');
 const { Op } = require('sequelize');
 
+const { uploadMultipleImages, delete: deleteImage } = require('../utils/cloudinary');
+
 const Property = require("../models/Property");
 
 const createProperty = async (req, res) => {
     const user = req.user;
     const property = Property.build(req.body);
     try {
-        await property.save();
-        await user.addProperty(property);
+        const newProperty = await property.save();
+        await user.addProperty(newProperty);
+        const images = await uploadMultipleImages(req.files);
+        images.forEach(async (image) => {
+            await newProperty.createImage(image);
+        })
         res.status(201).json({
             status: 'success',
             data: property,
@@ -44,7 +50,13 @@ const getAllProperties = async (req, res) => {
                     attributes: {
                         exclude: ['created_at', 'updated_at'],
                     },
-                }
+                },
+                {
+                    association: 'images',
+                    attributes: {
+                        exclude: ['created_at', 'updated_at'],
+                    },
+                },
             ],
         });
 
@@ -121,6 +133,28 @@ const getPropertyCategory = async (req, res) => {
         res.status(200).json({
             status: 'success',
             data: category,
+        })
+    } catch (error) {
+        res.status(error.status ?? 500).json({
+            status: 'error',
+            error: error.message ?? 'An error occured on the server. Try again or contact administrator if error persists.',
+        })
+    }
+}
+
+const getPropertyReports = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const property = await Property.findByPk(id, {
+            include: {
+                association: 'reports',
+            }
+        });
+        if (!property) throw new CreateError(404, 'Property not found!');
+
+        res.status(200).json({
+            status: 'success',
+            data: property,
         })
     } catch (error) {
         res.status(error.status ?? 500).json({
@@ -241,6 +275,13 @@ const deletePropertyById = async (req, res) => {
         const isValidUserProperty = !user.is_admin ? await user.hasProperty(property) : true;
         if (!isValidUserProperty) throw new CreateError(403, 'Access denied!');
 
+        const images = await property.getImages();
+        if (images.length > 0) {
+            images.forEach(async (image) => {
+                deleteImage(image.image_id);
+            });
+        }
+
         await property.destroy();
         res.status(200).json({
             status: 'success',
@@ -260,6 +301,7 @@ module.exports = {
     getPropertyById,
     getPropertyUser,
     getPropertyCategory,
+    getPropertyReports,
     getPropertyBySearchQuery,
     updatePropertyById,
     markAsSold,

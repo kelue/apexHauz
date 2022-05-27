@@ -1,12 +1,12 @@
 const { DataTypes, Model } = require('sequelize');
 const CreateError = require('http-errors');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const validator = require('validator');
 
 const sequelize = require('../db/mysql');
 const { generateJWTToken } = require('../utils/helpers');
+
 const Property = require('./Property');
+const Report = require('./Report');
 
 class User extends Model {
     static fillables = ['first_name', 'last_name', 'email', 'password', 'phone', 'address'];
@@ -98,6 +98,14 @@ User.hasMany(Property, {
 Property.belongsTo(User, {
     foreignKey: 'owner',
     as: 'proprietor',
+});
+
+User.hasMany(Report, {
+    foreignKey: 'user_id'
+});
+Report.belongsTo(User, {
+    foreignKey: 'user_id',
+    as: 'reporter',
 });
 
 User.beforeSave(async function (user) {

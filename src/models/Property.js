@@ -2,6 +2,9 @@ const { DataTypes, Model } = require('sequelize');
 
 const sequelize = require('../db/mysql');
 
+const Image = require('./Image');
+const Report = require('./Report');
+
 class Property extends Model {
     static fillables = ['owner', 'name', 'status', 'price', 'state', 'city', 'address', 'type', 'image_url', 'image_id', 'category_id'];
 }
@@ -57,6 +60,23 @@ Property.init({
     modelName: 'Property',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
+});
+
+// Relationships
+Property.hasMany(Image, {
+    onDelete: 'CASCADE',
+    as: 'images'
+});
+Image.belongsTo(Property);
+
+Property.hasMany(Report, {
+    foreignKey: 'property_id',
+    onDelete: 'CASCADE',
+    as: 'reports',
+});
+Report.belongsTo(Property, {
+    foreignKey: 'property_id',
+    as: 'property',
 });
 
 module.exports = Property;
