@@ -7,6 +7,7 @@ const { generateJWTToken } = require('../utils/helpers');
 
 const Property = require('./Property');
 const Report = require('./Report');
+const PasswordReset = require('./PasswordReset');
 
 class User extends Model {
     static fillables = ['first_name', 'last_name', 'email', 'password', 'phone', 'address'];
@@ -73,9 +74,6 @@ User.init({
     password: {
         type: DataTypes.STRING(250),
         allowNull: false,
-        validate: {
-            len: [6, 50],
-        }
     },
     phone: DataTypes.STRING(20),
 
@@ -106,6 +104,15 @@ User.hasMany(Report, {
 Report.belongsTo(User, {
     foreignKey: 'user_id',
     as: 'reporter',
+});
+
+User.hasOne(PasswordReset, {
+    foreignKey: 'email',
+    sourceKey: 'email',
+    onDelete: 'CASCADE',
+});
+PasswordReset.belongsTo(User, {
+    foreignKey: 'email',
 });
 
 User.beforeSave(async function (user) {
