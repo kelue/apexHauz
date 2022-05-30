@@ -360,23 +360,38 @@ exports.updatePropertyDetails = (req, res) => {
             errors
         )
     } else {
-        if (category_name) {
-            db.query(findCategoryByNameQuery, [
-                category_name
-            ], function (err, result) {
-                if (result.length > 0) {
-                    const category_id = result[0].id;
-                    db.query(getPropertyByIdQuery, [
-                        id
-                    ], function (err, result) {
-                        if (result.length > 0) {
-                            if (result[0].user_id == req.body.user_id) {
-                                const image_id = result[0].image_id;
-                                const image_url = result[0].image_url;
-                                if (image) {
-                                    Cloudinary.UploadImage(image, (err, data) => {
-                                        /* Checking if there is an error and returning an error message if there is an error. */
-                                        if (err)
+        /* Destructuring the request body. */
+        /* Uploading the image to cloudinary. */
+        db.query(findUserByIdQuery, [
+            user_id
+        ], function (err, result) {
+            if (result.length > 0) {
+                db.query(findCategoryByIdQuery, [
+                    category_id
+                ], function (err, result) {
+                    if (result.length > 0) {
+                        try {
+                            //upload.single(image);
+                            /* Uploading the image to cloudinary. */
+                            Cloudinary.UploadImage(image, (err, data) => {
+                                /* Checking if there is an error and returning an error message if there is an error. */
+                                if (err)
+                                    res.status(500).json({
+                                        status: 'error',
+                                        error: err.message || "Some error occurred while uploading Image"
+                                    });
+
+                                else {
+                                    /* Destructuring the data object. */
+                                    const { secure_url, public_id } = data;
+                                    /* Destructuring the data object. */
+                                    const image_url = secure_url;
+                                    const image_id = public_id;
+                                    /* Creating a new instance of the Properties class. */
+                                    const properties = new Properties(user_id, category_id, price, state, city, address, description, image_url, image_id, status);
+                                    /* Creating a new property. */
+                                    Properties.createProperties(properties, (err, data) => {
+                                        if (err) {
                                             res.status(500).json({
                                                 status: 'error',
                                                 error: err.message || "Some error occurred while uploading Image"
@@ -483,5 +498,22 @@ exports.updatePropertyDetails = (req, res) => {
                 }
             })
         }
+    }
+};
+
+exports.getUserProperties = async (req, res) => {
+    const user = req.user;
+
+    try {
+        const properties = await user.getProperties();
+        res.status(200).json({
+            status: 'success',
+            data: properties,
+        })
+    } catch (error) {
+        res.status(error.status ?? 500).json({
+            status: 'error',
+            error: error.message ?? 'An error occured on the server. Try again or contact administrator if error persists.',
+        })
     }
 }
