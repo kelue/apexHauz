@@ -40,3 +40,27 @@ Check Issues section to see todos and features to work on and indicate that you 
     MySQL
     JWT => Token management
     bcryptjs => Password hash
+
+### Additional API Endpoints
+    
+    /api/v1/forgot-password => {
+
+    Required Params {
+        email
+    }
+
+    }
+
+
+
+    /api/v1/reset-password => {
+
+        Required Parameters {
+            token,
+            new_password
+        }
+    }
+
+### Noted on additional features
+
+    Please configure your email server in the .env File and use a valid email address for testing

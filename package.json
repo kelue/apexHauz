@@ -44,6 +44,8 @@
         "mysql2": "^2.3.3",
         "sequelize": "^6.19.2",
         "slugify": "^1.6.5",
+        "nodemailer": "^6.7.5",
+        "rand-token": "^1.0.1",
         "validator": "^13.7.0"
     }
 }

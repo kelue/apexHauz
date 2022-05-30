@@ -1,9 +1,12 @@
 /* Importing the database connection from the db.config.js file. */
-const db = require("../config/db.config");
+const { connection: db } = require("../config/db.config");
 const {
     getAllProperties: getAllPropertiesQuery,
     getPropertyById: getPropertyByIdQuery,
     createNewProperty: createNewPropertyQuery,
+    updatePropertyStatus: updatePropertyStatusQuery,
+    deleteProperty: deletePropertyQuery,
+    updatePropertyDetails: updatePropertyDetailsQuery
 } = require("../database/queries/properties");
 
 class Properties {
@@ -114,6 +117,69 @@ class Properties {
                 return;
             }
         });
+    }
+    static updatePropertyStatus(id, status, next) {
+        db.query(updatePropertyStatusQuery, [
+            status,
+            id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                return next();
+            }
+        })
+    }
+    static deleteProperty(id, next) {
+        db.query(deletePropertyQuery, [
+            id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                return next();
+            }
+        })
+    }
+
+    static updatePropertyDetails(properties, result) {
+        db.query(updatePropertyDetailsQuery, [
+            properties.category_id,
+            properties.price,
+            properties.state,
+            properties.city,
+            properties.description,
+            properties.address,
+            properties.status,
+            properties.image_url,
+            properties.image_id,
+            properties.id
+        ], (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                return;
+            } else {
+                const info = {
+                    id: properties.id,
+                    user_id: properties.user_id,
+                    category_id: properties.category_id,
+                    price: properties.price,
+                    state: properties.state,
+                    city: properties.city,
+                    address: properties.address,
+                    description: properties.description,
+                    image_url: properties.image_url,
+                    image_id: properties.image_id,
+                    status: properties.status
+                };
+                result(null, info);
+                return;
+                //console.log("hey");
+                // return next();
+            }
+        })
     }
 }
 

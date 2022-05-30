@@ -10,10 +10,12 @@ const fileStorage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname); // extracts the file extension
-        const name = Date.now().toString() + '_' + crypto.randomBytes(8).toString('hex') + ext; // generates a new file name from the current timestamp, a random string plus the original file extension to 
+        const name = Date.now().toString() + '_' + crypto.randomBytes(8).toString('hex') + ext; // generates a new file name from the current timestamp, a random string plus the original file extension to
         cb(null, name);
     }
 });
+
+//const upload = multer({ storage: fileStorage })
 
 const upload = multer({
     storage: fileStorage,
