@@ -1,6 +1,6 @@
 # SHCapstonetwo
 
-## Side Hustle Second Capstone Project Nodejs Track Group 24
+## Side Hustle Second Capstone Project for Nodejs Track Group 24
 
 Clone the project to your local to begin working on it or you can fork the repo to your github account and make changes there.
 
@@ -40,3 +40,5 @@ Check Issues section to see todos and features to work on and indicate that you 
     MySQL
     JWT => Token management
     bcryptjs => Password hash
+
+
